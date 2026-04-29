@@ -506,7 +506,13 @@ footer{
     <a class="nav-link" href="#features">Features</a>
     <a class="nav-link" href="#how">How it works</a>
     <a class="nav-link" href="#app">Try it</a>
-    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme"><span class="theme-dot"></span><span id="themeLabel">Dark Mode</span></button>
+    <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle color theme" aria-pressed="false">
+      <span class="theme-switch__track">
+        <span class="theme-switch__option theme-switch__option--dark">Dark</span>
+        <span class="theme-switch__option theme-switch__option--light">Light</span>
+        <span class="theme-switch__thumb"></span>
+      </span>
+    </button>
     <a class="nav-cta" href="#app">Get Started Free</a>
   </div>
 </nav>
@@ -1094,6 +1100,7 @@ renderTracker();
 </script>
 </body>
 </html>
+
 
 
 
