@@ -1,5 +1,6 @@
 ﻿"""
 Kaltum JobHub — FastAPI Backend
+Adzuna + Remotive job search
 Deploy on Render.com
 """
 from fastapi import FastAPI, HTTPException
@@ -10,7 +11,7 @@ import anthropic
 import httpx
 import os
 
-app = FastAPI(title="Kaltum JobHub API", version="1.0.1")
+app = FastAPI(title="Kaltum JobHub API", version="1.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +21,8 @@ app.add_middleware(
 )
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID", "")
+ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY", "")
 
 
 # Models
@@ -39,7 +42,7 @@ class ResumeEnhanceRequest(BaseModel):
 # Health
 @app.get("/")
 def root():
-    return {"status": "Kaltum JobHub API running", "version": "1.0.1"}
+    return {"status": "Kaltum JobHub API running", "version": "1.1.0"}
 
 
 @app.get("/health")
@@ -47,74 +50,135 @@ def health():
     return {"status": "ok"}
 
 
+def normalize_adzuna_job(job: dict) -> dict:
+    company = (job.get("company") or {}).get("display_name") or "Unknown"
+    location = (job.get("location") or {}).get("display_name") or "USA"
+
+    salary_min = job.get("salary_min")
+    salary_max = job.get("salary_max")
+    salary = ""
+
+    if salary_min and salary_max:
+        salary = f"${int(salary_min):,} - ${int(salary_max):,}"
+    elif salary_min:
+        salary = f"From ${int(salary_min):,}"
+    elif salary_max:
+        salary = f"Up to ${int(salary_max):,}"
+
+    return {
+        "id": job.get("id"),
+        "company": company,
+        "title": job.get("title") or "Role",
+        "location": location,
+        "salary": salary,
+        "url": job.get("redirect_url") or "",
+        "description": job.get("description") or "",
+        "category": (job.get("category") or {}).get("label") or "",
+        "source": "Adzuna"
+    }
+
+
+def normalize_remotive_job(job: dict) -> dict:
+    return {
+        "id": job.get("id"),
+        "company": job.get("company_name") or "Unknown",
+        "title": job.get("title") or "Role",
+        "location": job.get("candidate_required_location") or "Remote",
+        "salary": job.get("salary") or "",
+        "url": job.get("url") or "",
+        "description": job.get("description") or "",
+        "category": job.get("category") or "",
+        "source": "Remotive"
+    }
+
+
 # Job Search
 @app.get("/jobs/search")
-async def search_jobs(role: str, location: str = "remote", limit: int = 15):
+async def search_jobs(
+    role: str,
+    location: str = "usa",
+    company: str = "",
+    limit: int = 15
+):
     """
-    Search remote jobs from Remotive free jobs API.
-    Note: Remotive mainly returns remote roles, so location is returned for display,
-    but the provider may not strictly filter by city.
+    Search USA jobs using Adzuna first.
+    Falls back to Remotive if Adzuna is unavailable or returns no jobs.
+    Examples:
+    /jobs/search?role=data analyst&location=boston&company=amazon
+    /jobs/search?role=software engineer&location=california&company=google
     """
-    try:
-        role_clean = role.strip()
+    role_clean = role.strip()
+    location_clean = location.strip() or "usa"
+    company_clean = company.strip()
+    safe_limit = max(1, min(limit, 50))
 
-        if not role_clean:
-            raise HTTPException(status_code=400, detail="Role is required")
+    if not role_clean:
+        raise HTTPException(status_code=400, detail="Role is required")
 
-        safe_limit = max(1, min(limit, 30))
+    query = role_clean
+    if company_clean and company_clean.lower() not in ["all", "any"]:
+        query = f"{company_clean} {role_clean}"
 
-        async with httpx.AsyncClient(timeout=20) as client:
-            response = await client.get(
-                "https://remotive.com/api/remote-jobs",
-                params={"search": role_clean},
-                headers={
-                    "Accept": "application/json",
-                    "User-Agent": "Kaltum-JobHub/1.0"
-                }
-            )
+    all_jobs = []
 
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=502,
-                detail=f"Job provider error: HTTP {response.status_code}"
-            )
-
+    # 1. Adzuna USA job search
+    if ADZUNA_APP_ID and ADZUNA_APP_KEY:
         try:
-            data = response.json()
+            async with httpx.AsyncClient(timeout=20) as client:
+                response = await client.get(
+                    "https://api.adzuna.com/v1/api/jobs/us/search/1",
+                    params={
+                        "app_id": ADZUNA_APP_ID,
+                        "app_key": ADZUNA_APP_KEY,
+                        "what": query,
+                        "where": location_clean,
+                        "results_per_page": safe_limit,
+                        "sort_by": "date",
+                        "content-type": "application/json",
+                    },
+                    headers={
+                        "Accept": "application/json",
+                        "User-Agent": "Kaltum-JobHub/1.1"
+                    }
+                )
+
+            if response.status_code == 200:
+                data = response.json()
+                results = data.get("results", [])
+                all_jobs = [normalize_adzuna_job(job) for job in results]
+
         except Exception:
-            raise HTTPException(
-                status_code=502,
-                detail="Job provider returned invalid data. Please try again."
-            )
+            all_jobs = []
 
-        provider_jobs = data.get("jobs", [])
-        matches = []
+    # 2. Remotive fallback
+    if not all_jobs:
+        try:
+            async with httpx.AsyncClient(timeout=20) as client:
+                response = await client.get(
+                    "https://remotive.com/api/remote-jobs",
+                    params={"search": query},
+                    headers={
+                        "Accept": "application/json",
+                        "User-Agent": "Kaltum-JobHub/1.1"
+                    }
+                )
 
-        for job in provider_jobs[:safe_limit]:
-            matches.append({
-                "id": job.get("id"),
-                "company": job.get("company_name") or "Unknown",
-                "title": job.get("title") or "Role",
-                "location": job.get("candidate_required_location") or "Remote",
-                "salary": job.get("salary") or "",
-                "url": job.get("url") or "",
-                "tags": job.get("tags") or [],
-                "category": job.get("category") or "",
-                "source": "Remotive"
-            })
+            if response.status_code == 200:
+                data = response.json()
+                results = data.get("jobs", [])
+                all_jobs = [normalize_remotive_job(job) for job in results[:safe_limit]]
 
-        return {
-            "jobs": matches,
-            "total": len(matches),
-            "role": role_clean,
-            "location": location,
-            "source": "Remotive"
-        }
+        except Exception:
+            all_jobs = []
 
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+    return {
+        "jobs": all_jobs[:safe_limit],
+        "total": len(all_jobs[:safe_limit]),
+        "role": role_clean,
+        "location": location_clean,
+        "company": company_clean or "all",
+        "source": "Adzuna" if all_jobs and all_jobs[0].get("source") == "Adzuna" else "Remotive"
+    }
 
 
 # Cover Letter
