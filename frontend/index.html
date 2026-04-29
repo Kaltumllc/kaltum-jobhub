@@ -190,9 +190,15 @@ body.light-theme nav {
 }
 .feat:hover{background:var(--surface2);}
 .feat-icon {
-  width:44px;height:44px;border-radius:10px;
+  width:44px;height:44px;border-radius:12px;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;margin-bottom:1.2rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:0.08em;
+  margin-bottom:1.2rem;
+  border:1px solid var(--border);
+  color:var(--text);
 }
 .feat-icon.f1{background:rgba(249,115,22,0.12);}
 .feat-icon.f2{background:rgba(6,182,212,0.12);}
@@ -558,32 +564,32 @@ footer{
     <p class="section-sub">One platform to search, apply, track, and stand out â€” no more juggling 10 tabs.</p>
     <div class="features-grid">
       <div class="feat">
-        <div class="feat-icon f1">ðŸ”</div>
+        <div class="feat-icon f1">JS</div>
         <div class="feat-title">Smart Job Search</div>
         <div class="feat-desc">Search real jobs from RemoteOK, LinkedIn, and more in one place. Filter by role, location, salary, and work type.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f2">ðŸ“„</div>
+        <div class="feat-icon f2">CV</div>
         <div class="feat-title">AI Resume Builder</div>
         <div class="feat-desc">Build a professional resume in minutes. Claude AI enhances your bullet points and tailors it to each job automatically.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f3">âœï¸</div>
+        <div class="feat-icon f3">CL</div>
         <div class="feat-title">Cover Letter AI</div>
         <div class="feat-desc">Paste a job description and get a personalized, human-sounding cover letter in seconds. Never write one from scratch again.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f4">ðŸ“Š</div>
+        <div class="feat-icon f4">AT</div>
         <div class="feat-title">Application Tracker</div>
         <div class="feat-desc">Track every application in one dashboard. Know what's saved, applied, in interview, or needs a follow-up.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f5">ðŸŽ¯</div>
+        <div class="feat-icon f5">MS</div>
         <div class="feat-title">Job Match Score</div>
         <div class="feat-desc">See how well your profile matches each job before applying. AI tells you what to highlight and what's missing.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f6">ðŸ””</div>
+        <div class="feat-icon f6">FR</div>
         <div class="feat-title">Follow-up Reminders</div>
         <div class="feat-desc">Never ghost a recruiter again. Kaltum reminds you when to follow up on applications and interviews.</div>
       </div>
@@ -1100,6 +1106,7 @@ renderTracker();
 </script>
 </body>
 </html>
+
 
 
 
