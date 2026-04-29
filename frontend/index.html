@@ -501,6 +501,79 @@ footer{
   .hero-stats{gap:2rem;}
   .search-bar{flex-direction:column;}
 }
+/* ── FINAL PROFESSIONAL KALTUM THEME SWITCH ── */
+.kaltum-mode-switch {
+  all: unset !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  margin: 0 0.55rem 0 0.35rem !important;
+}
+
+.kaltum-mode-switch__track {
+  position: relative !important;
+  width: 132px !important;
+  height: 38px !important;
+  padding: 4px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--border) !important;
+  background: rgba(15, 27, 45, 0.95) !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  align-items: center !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 10px 26px rgba(0,0,0,0.24) !important;
+}
+
+.kaltum-mode-switch__label {
+  position: relative !important;
+  z-index: 2 !important;
+  text-align: center !important;
+  font-family: 'Epilogue', sans-serif !important;
+  font-size: 0.74rem !important;
+  font-weight: 800 !important;
+  color: var(--muted) !important;
+  line-height: 1 !important;
+  user-select: none !important;
+}
+
+.kaltum-mode-switch__thumb {
+  position: absolute !important;
+  z-index: 1 !important;
+  left: 4px !important;
+  top: 4px !important;
+  width: calc(50% - 4px) !important;
+  height: calc(100% - 8px) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, var(--accent), var(--purple)) !important;
+  box-shadow: 0 8px 18px rgba(249,115,22,0.32) !important;
+  transition: transform 0.22s ease !important;
+}
+
+body:not(.light-theme) .kaltum-mode-switch__label--dark {
+  color: #ffffff !important;
+}
+
+body.light-theme .kaltum-mode-switch__track {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 26px rgba(15,23,42,0.12) !important;
+}
+
+body.light-theme .kaltum-mode-switch__thumb {
+  transform: translateX(100%) !important;
+  background: linear-gradient(135deg, #0ea5e9, #7c3aed) !important;
+  box-shadow: 0 8px 18px rgba(14,165,233,0.30) !important;
+}
+
+body.light-theme .kaltum-mode-switch__label--light {
+  color: #ffffff !important;
+}
+
+body.light-theme .kaltum-mode-switch__label--dark {
+  color: #475569 !important;
+}
 </style>
 </head>
 <body>
@@ -508,17 +581,20 @@ footer{
 <!-- NAV -->
 <nav>
   <div class="nav-logo">Kaltum</div>
+
   <div class="nav-links">
     <a class="nav-link" href="#features">Features</a>
     <a class="nav-link" href="#how">How it works</a>
     <a class="nav-link" href="#app">Try it</a>
-    <button id="themeToggle" class="theme-switch" type="button" aria-label="Toggle color theme" aria-pressed="false">
-      <span class="theme-switch__track">
-        <span class="theme-switch__option theme-switch__option--dark">Dark</span>
-        <span class="theme-switch__option theme-switch__option--light">Light</span>
-        <span class="theme-switch__thumb"></span>
+
+    <button id="kaltumThemeSwitch" class="kaltum-mode-switch" type="button" aria-label="Toggle color theme">
+      <span class="kaltum-mode-switch__track">
+        <span class="kaltum-mode-switch__label kaltum-mode-switch__label--dark">Dark</span>
+        <span class="kaltum-mode-switch__label kaltum-mode-switch__label--light">Light</span>
+        <span class="kaltum-mode-switch__thumb"></span>
       </span>
     </button>
+
     <a class="nav-cta" href="#app">Get Started Free</a>
   </div>
 </nav>
@@ -831,7 +907,32 @@ function switchTab(id, el) {
   document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('panel-' + id).classList.add('on');
-  if (id === 'tracker') renderTracker();
+  if (id === 'tracker') // ── FINAL THEME SWITCH ─────────────────────────────────────────────
+const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
+
+function applyKaltumTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('light-theme', isLight);
+
+  if (kaltumThemeSwitch) {
+    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
+    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+}
+
+const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
+applyKaltumTheme(kaltumSavedTheme);
+
+if (kaltumThemeSwitch) {
+  kaltumThemeSwitch.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    const nextTheme = isLight ? 'dark' : 'light';
+    localStorage.setItem('kaltum-theme', nextTheme);
+    applyKaltumTheme(nextTheme);
+  });
+}
+
+renderTracker();
 }
 
 // â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1041,17 +1142,92 @@ function filterTracker(f, el) {
   trackerFilter = f;
   document.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
   el.classList.add('on');
-  renderTracker();
+  // ── FINAL THEME SWITCH ─────────────────────────────────────────────
+const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
+
+function applyKaltumTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('light-theme', isLight);
+
+  if (kaltumThemeSwitch) {
+    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
+    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+}
+
+const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
+applyKaltumTheme(kaltumSavedTheme);
+
+if (kaltumThemeSwitch) {
+  kaltumThemeSwitch.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    const nextTheme = isLight ? 'dark' : 'light';
+    localStorage.setItem('kaltum-theme', nextTheme);
+    applyKaltumTheme(nextTheme);
+  });
+}
+
+renderTracker();
 }
 
 function updateStatus(id, status) {
   const j = jobs.find(x => x.id === id);
-  if (j) { j.status = status; saveJobs(); renderTracker(); }
+  if (j) { j.status = status; saveJobs(); // ── FINAL THEME SWITCH ─────────────────────────────────────────────
+const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
+
+function applyKaltumTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('light-theme', isLight);
+
+  if (kaltumThemeSwitch) {
+    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
+    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+}
+
+const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
+applyKaltumTheme(kaltumSavedTheme);
+
+if (kaltumThemeSwitch) {
+  kaltumThemeSwitch.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    const nextTheme = isLight ? 'dark' : 'light';
+    localStorage.setItem('kaltum-theme', nextTheme);
+    applyKaltumTheme(nextTheme);
+  });
+}
+
+renderTracker(); }
 }
 
 function deleteJob(id) {
   jobs = jobs.filter(x => x.id !== id);
-  saveJobs(); renderTracker(); toast('Removed');
+  saveJobs(); // ── FINAL THEME SWITCH ─────────────────────────────────────────────
+const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
+
+function applyKaltumTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('light-theme', isLight);
+
+  if (kaltumThemeSwitch) {
+    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
+    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+}
+
+const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
+applyKaltumTheme(kaltumSavedTheme);
+
+if (kaltumThemeSwitch) {
+  kaltumThemeSwitch.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    const nextTheme = isLight ? 'dark' : 'light';
+    localStorage.setItem('kaltum-theme', nextTheme);
+    applyKaltumTheme(nextTheme);
+  });
+}
+
+renderTracker(); toast('Removed');
 }
 
 function saveJobs() { localStorage.setItem('kaltum-apps', JSON.stringify(jobs)); }
@@ -1071,7 +1247,32 @@ function saveJob() {
     notes: document.getElementById('m-notes').value.trim(),
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})
   });
-  saveJobs(); closeModal(); renderTracker();
+  saveJobs(); closeModal(); // ── FINAL THEME SWITCH ─────────────────────────────────────────────
+const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
+
+function applyKaltumTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('light-theme', isLight);
+
+  if (kaltumThemeSwitch) {
+    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
+    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+}
+
+const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
+applyKaltumTheme(kaltumSavedTheme);
+
+if (kaltumThemeSwitch) {
+  kaltumThemeSwitch.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    const nextTheme = isLight ? 'dark' : 'light';
+    localStorage.setItem('kaltum-theme', nextTheme);
+    applyKaltumTheme(nextTheme);
+  });
+}
+
+renderTracker();
   ['m-co','m-title','m-loc','m-notes'].forEach(id => document.getElementById(id).value = '');
   toast(`${co} added!`);
 }
@@ -1102,10 +1303,36 @@ themeToggle.addEventListener('click', () => {
   applyTheme(newTheme);
 });
 
+// ── FINAL THEME SWITCH ─────────────────────────────────────────────
+const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
+
+function applyKaltumTheme(theme) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('light-theme', isLight);
+
+  if (kaltumThemeSwitch) {
+    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
+    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+}
+
+const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
+applyKaltumTheme(kaltumSavedTheme);
+
+if (kaltumThemeSwitch) {
+  kaltumThemeSwitch.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    const nextTheme = isLight ? 'dark' : 'light';
+    localStorage.setItem('kaltum-theme', nextTheme);
+    applyKaltumTheme(nextTheme);
+  });
+}
+
 renderTracker();
 </script>
 </body>
 </html>
+
 
 
 
