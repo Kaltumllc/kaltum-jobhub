@@ -11,7 +11,7 @@ import anthropic
 import httpx
 import os
 
-app = FastAPI(title="Kaltum JobHub API", version="1.1.0")
+app = FastAPI(title="Kaltum JobHub API", version="1.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,6 +23,8 @@ app.add_middleware(
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID", "")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY", "")
+USAJOBS_API_KEY = os.getenv("USAJOBS_API_KEY", "")
+USAJOBS_USER_AGENT = os.getenv("USAJOBS_USER_AGENT", "")
 
 
 # Models
@@ -42,7 +44,7 @@ class ResumeEnhanceRequest(BaseModel):
 # Health
 @app.get("/")
 def root():
-    return {"status": "Kaltum JobHub API running", "version": "1.1.0"}
+    return {"status": "Kaltum JobHub API running", "version": "1.2.0"}
 
 
 @app.get("/health")
@@ -89,6 +91,47 @@ def normalize_remotive_job(job: dict) -> dict:
         "description": job.get("description") or "",
         "category": job.get("category") or "",
         "source": "Remotive"
+    }
+
+
+def normalize_usajobs_job(item: dict) -> dict:
+    descriptor = item.get("MatchedObjectDescriptor", {}) or {}
+    user_area = descriptor.get("UserArea", {}) or {}
+    details = user_area.get("Details", {}) or {}
+
+    org = descriptor.get("OrganizationName") or details.get("AgencyMarketingStatement") or "Federal Government"
+    title = descriptor.get("PositionTitle") or "Federal Role"
+    location_items = descriptor.get("PositionLocation", []) or []
+    location = "USA"
+
+    if location_items:
+        location_parts = []
+        for loc in location_items[:3]:
+            name = loc.get("LocationName")
+            if name:
+                location_parts.append(name)
+        if location_parts:
+            location = " | ".join(location_parts)
+
+    salary_min = descriptor.get("PositionRemuneration", [{}])[0].get("MinimumRange") if descriptor.get("PositionRemuneration") else ""
+    salary_max = descriptor.get("PositionRemuneration", [{}])[0].get("MaximumRange") if descriptor.get("PositionRemuneration") else ""
+    salary = ""
+
+    if salary_min and salary_max:
+        salary = f"${salary_min} - ${salary_max}"
+
+    url = descriptor.get("PositionURI") or ""
+
+    return {
+        "id": descriptor.get("PositionID") or item.get("MatchedObjectId"),
+        "company": org,
+        "title": title,
+        "location": location,
+        "salary": salary,
+        "url": url,
+        "description": descriptor.get("QualificationSummary") or descriptor.get("UserArea", {}).get("Details", {}).get("JobSummary", ""),
+        "category": "Federal Government",
+        "source": "USAJOBS"
     }
 
 
@@ -150,7 +193,35 @@ async def search_jobs(
         except Exception:
             all_jobs = []
 
-    # 2. Remotive fallback
+    # 2. USAJOBS federal job search
+    if not all_jobs and USAJOBS_API_KEY and USAJOBS_USER_AGENT:
+        try:
+            async with httpx.AsyncClient(timeout=20) as client:
+                response = await client.get(
+                    "https://data.usajobs.gov/api/search",
+                    params={
+                        "Keyword": query,
+                        "LocationName": location_clean,
+                        "ResultsPerPage": safe_limit
+                    },
+                    headers={
+                        "Host": "data.usajobs.gov",
+                        "User-Agent": USAJOBS_USER_AGENT,
+                        "Authorization-Key": USAJOBS_API_KEY,
+                        "Accept": "application/json"
+                    }
+                )
+
+            if response.status_code == 200:
+                data = response.json()
+                search_result = data.get("SearchResult", {}) or {}
+                items = search_result.get("SearchResultItems", []) or []
+                all_jobs = [normalize_usajobs_job(item) for item in items[:safe_limit]]
+
+        except Exception:
+            all_jobs = []
+
+    # 3. Remotive fallback
     if not all_jobs:
         try:
             async with httpx.AsyncClient(timeout=20) as client:
@@ -177,7 +248,7 @@ async def search_jobs(
         "role": role_clean,
         "location": location_clean,
         "company": company_clean or "all",
-        "source": "Adzuna" if all_jobs and all_jobs[0].get("source") == "Adzuna" else "Remotive"
+        "source": all_jobs[0].get("source") if all_jobs else "None"
     }
 
 
