@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kaltum — AI Job Search & Resume Builder</title>
+<title>Kaltum â€” AI Job Search & Resume Builder</title>
 <meta name="description" content="Search jobs, build your resume, and generate cover letters powered by AI. Land your dream job faster with Kaltum.">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -46,7 +46,7 @@ body{
   transition:background 0.25s ease,color 0.25s ease;
 }
 
-/* ── NAV ── */
+/* â”€â”€ NAV â”€â”€ */
 nav {
   position:fixed;top:0;left:0;right:0;z-index:100;
   background:rgba(7,17,31,0.86);
@@ -81,7 +81,7 @@ body.light-theme nav {
 }
 .nav-cta:hover{background:#ea6c10;transform:translateY(-1px);}
 
-/* ── HERO ── */
+/* â”€â”€ HERO â”€â”€ */
 .hero {
   min-height:100vh;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -163,7 +163,7 @@ body.light-theme nav {
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── FEATURES ── */
+/* â”€â”€ FEATURES â”€â”€ */
 .section{padding:6rem 2rem;}
 .section-inner{max-width:1100px;margin:0 auto;}
 .section-label {
@@ -203,7 +203,7 @@ body.light-theme nav {
 .feat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.5rem;}
 .feat-desc{color:var(--muted);font-size:0.85rem;line-height:1.6;}
 
-/* ── HOW IT WORKS ── */
+/* â”€â”€ HOW IT WORKS â”€â”€ */
 .how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
 .how-step{text-align:center;padding:1.5rem 1rem;}
 .how-num {
@@ -213,7 +213,7 @@ body.light-theme nav {
 .how-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.5rem;}
 .how-desc{color:var(--muted);font-size:0.82rem;line-height:1.6;}
 
-/* ── APP PREVIEW ── */
+/* â”€â”€ APP PREVIEW â”€â”€ */
 .app-section{padding:4rem 2rem 6rem;}
 .app-inner{max-width:1100px;margin:0 auto;}
 .app-tabs{
@@ -230,7 +230,7 @@ body.light-theme nav {
 .app-panel{display:none;}
 .app-panel.on{display:block;animation:fadeUp 0.3s ease;}
 
-/* ── JOB SEARCH APP ── */
+/* â”€â”€ JOB SEARCH APP â”€â”€ */
 .search-bar {
   display:flex;gap:0.7rem;margin-bottom:1.5rem;
 }
@@ -296,7 +296,7 @@ body.light-theme nav {
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── RESUME BUILDER ── */
+/* â”€â”€ RESUME BUILDER â”€â”€ */
 .resume-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
 .r-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}
 .r-panel-title{
@@ -345,7 +345,7 @@ body.light-theme nav {
 .ai-enhance-btn:hover{opacity:0.9;}
 .ai-enhance-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
-/* ── COVER LETTER ── */
+/* â”€â”€ COVER LETTER â”€â”€ */
 .cl-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem;}
 .cl-output {
   background:var(--surface);border:1px solid var(--border);
@@ -369,7 +369,7 @@ body.light-theme nav {
 }
 .copy-btn:hover{color:var(--text);border-color:var(--muted);}
 
-/* ── TRACKER ── */
+/* â”€â”€ TRACKER â”€â”€ */
 .tracker-header{display:flex;gap:0.5rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;justify-content:space-between;}
 .filter-pills{display:flex;gap:0.4rem;flex-wrap:wrap;}
 .fpill {
@@ -412,7 +412,7 @@ body.light-theme nav {
 }
 .del-btn:hover{color:var(--accent);}
 
-/* ── ADD JOB MODAL ── */
+/* â”€â”€ ADD JOB MODAL â”€â”€ */
 .overlay{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
@@ -442,7 +442,7 @@ body.light-theme nav {
 }
 .btn-modal-save:hover{background:#ea6c10;}
 
-/* ── TOAST ── */
+/* â”€â”€ TOAST â”€â”€ */
 .toast{
   position:fixed;bottom:2rem;right:2rem;
   background:var(--surface2);border:1px solid var(--border);
@@ -454,7 +454,7 @@ body.light-theme nav {
 .toast.show{transform:translateY(0);opacity:1;}
 .toast-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
 
-/* ── CTA SECTION ── */
+/* â”€â”€ CTA SECTION â”€â”€ */
 .cta-section{
   padding:6rem 2rem;text-align:center;
   background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
@@ -463,7 +463,7 @@ body.light-theme nav {
 .cta-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;}
 .cta-sub{color:var(--muted);font-size:1rem;margin-bottom:2.5rem;}
 
-/* ── FOOTER ── */
+/* â”€â”€ FOOTER â”€â”€ */
 footer{
   border-top:1px solid var(--border);padding:2rem 3rem;
   display:flex;align-items:center;justify-content:space-between;
@@ -471,14 +471,14 @@ footer{
 .footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;}
 .footer-copy{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);}
 
-/* ── TYPING DOTS ── */
+/* â”€â”€ TYPING DOTS â”€â”€ */
 .dots{display:inline-flex;gap:4px;align-items:center;}
 .dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;}
 .dots span:nth-child(2){animation-delay:.2s}
 .dots span:nth-child(3){animation-delay:.4s}
 @keyframes pulse{0%,80%,100%{opacity:0.2}40%{opacity:1}}
 
-/* ── EMPTY STATE ── */
+/* â”€â”€ EMPTY STATE â”€â”€ */
 .empty-state{
   text-align:center;padding:3rem;color:var(--muted);
   border:1px dashed var(--border);border-radius:12px;
@@ -486,7 +486,7 @@ footer{
 .empty-icon{font-size:2.5rem;margin-bottom:0.8rem;}
 .empty-title{font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--text);margin-bottom:0.4rem;}
 
-/* ── RESPONSIVE ── */
+/* â”€â”€ RESPONSIVE â”€â”€ */
 @media(max-width:768px){
   nav{padding:0 1.5rem;}
   .features-grid{grid-template-columns:1fr;}
@@ -517,15 +517,15 @@ footer{
   <div class="hero-glow2"></div>
   <div class="hero-badge">
     <span class="badge-dot"></span>
-    AI-powered · Free to use · No sign-up required
+    AI-powered Â· Free to use Â· No sign-up required
   </div>
   <h1 class="hero-title">
     Your AI job search<br>
     <span class="line2">starts here.</span>
   </h1>
-  <p class="hero-sub">Search thousands of jobs, build a standout resume, and generate personalized cover letters — all powered by AI. Land your dream job faster.</p>
+  <p class="hero-sub">Search thousands of jobs, build a standout resume, and generate personalized cover letters â€” all powered by AI. Land your dream job faster.</p>
   <div class="hero-btns">
-    <a href="#app" class="btn-hero btn-hero-primary">Start Job Search →</a>
+    <a href="#app" class="btn-hero btn-hero-primary">Start Job Search â†’</a>
     <a href="#features" class="btn-hero btn-hero-ghost">See how it works</a>
   </div>
   <div class="hero-stats">
@@ -549,35 +549,35 @@ footer{
   <div class="section-inner">
     <div class="section-label">What Kaltum does</div>
     <h2 class="section-title">Everything you need to land the job.</h2>
-    <p class="section-sub">One platform to search, apply, track, and stand out — no more juggling 10 tabs.</p>
+    <p class="section-sub">One platform to search, apply, track, and stand out â€” no more juggling 10 tabs.</p>
     <div class="features-grid">
       <div class="feat">
-        <div class="feat-icon f1">🔍</div>
+        <div class="feat-icon f1">ðŸ”</div>
         <div class="feat-title">Smart Job Search</div>
         <div class="feat-desc">Search real jobs from RemoteOK, LinkedIn, and more in one place. Filter by role, location, salary, and work type.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f2">📄</div>
+        <div class="feat-icon f2">ðŸ“„</div>
         <div class="feat-title">AI Resume Builder</div>
         <div class="feat-desc">Build a professional resume in minutes. Claude AI enhances your bullet points and tailors it to each job automatically.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f3">✍️</div>
+        <div class="feat-icon f3">âœï¸</div>
         <div class="feat-title">Cover Letter AI</div>
         <div class="feat-desc">Paste a job description and get a personalized, human-sounding cover letter in seconds. Never write one from scratch again.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f4">📊</div>
+        <div class="feat-icon f4">ðŸ“Š</div>
         <div class="feat-title">Application Tracker</div>
         <div class="feat-desc">Track every application in one dashboard. Know what's saved, applied, in interview, or needs a follow-up.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f5">🎯</div>
+        <div class="feat-icon f5">ðŸŽ¯</div>
         <div class="feat-title">Job Match Score</div>
         <div class="feat-desc">See how well your profile matches each job before applying. AI tells you what to highlight and what's missing.</div>
       </div>
       <div class="feat">
-        <div class="feat-icon f6">🔔</div>
+        <div class="feat-icon f6">ðŸ””</div>
         <div class="feat-title">Follow-up Reminders</div>
         <div class="feat-desc">Never ghost a recruiter again. Kaltum reminds you when to follow up on applications and interviews.</div>
       </div>
@@ -621,10 +621,10 @@ footer{
     <div class="section-label" style="margin-bottom:0.8rem">Live App</div>
     <h2 class="section-title" style="margin-bottom:2rem">Try Kaltum right now.</h2>
     <div class="app-tabs">
-      <button class="app-tab on" onclick="switchTab('search',this)">🔍 Job Search</button>
-      <button class="app-tab" onclick="switchTab('resume',this)">📄 Resume Builder</button>
-      <button class="app-tab" onclick="switchTab('cover',this)">✍️ Cover Letter</button>
-      <button class="app-tab" onclick="switchTab('tracker',this)">📊 My Applications</button>
+      <button class="app-tab on" onclick="switchTab('search',this)">ðŸ” Job Search</button>
+      <button class="app-tab" onclick="switchTab('resume',this)">ðŸ“„ Resume Builder</button>
+      <button class="app-tab" onclick="switchTab('cover',this)">âœï¸ Cover Letter</button>
+      <button class="app-tab" onclick="switchTab('tracker',this)">ðŸ“Š My Applications</button>
     </div>
 
     <!-- JOB SEARCH -->
@@ -636,7 +636,7 @@ footer{
       </div>
       <div id="jobResults">
         <div class="empty-state">
-          <div class="empty-icon">🔍</div>
+          <div class="empty-icon">ðŸ”</div>
           <div class="empty-title">Search for your dream job</div>
           <div style="font-size:0.82rem;margin-top:0.3rem">Enter a role above and hit Search</div>
         </div>
@@ -659,28 +659,28 @@ footer{
             </div>
             <div class="form-group">
               <label class="form-label">Email & Phone</label>
-              <input class="form-input" id="r-contact" placeholder="jane@email.com · (555) 123-4567" oninput="updatePreview()" />
+              <input class="form-input" id="r-contact" placeholder="jane@email.com Â· (555) 123-4567" oninput="updatePreview()" />
             </div>
             <div class="form-group">
               <label class="form-label">Work Experience</label>
-              <textarea class="form-textarea" id="r-exp" placeholder="Job Title — Company (Year–Year)&#10;• What you did and achieved..." oninput="updatePreview()"></textarea>
+              <textarea class="form-textarea" id="r-exp" placeholder="Job Title â€” Company (Yearâ€“Year)&#10;â€¢ What you did and achieved..." oninput="updatePreview()"></textarea>
             </div>
             <div class="form-group">
               <label class="form-label">Education</label>
-              <input class="form-input" id="r-edu" placeholder="B.S. Computer Science — MIT, 2022" oninput="updatePreview()" />
+              <input class="form-input" id="r-edu" placeholder="B.S. Computer Science â€” MIT, 2022" oninput="updatePreview()" />
             </div>
             <div class="form-group">
               <label class="form-label">Skills (comma separated)</label>
               <input class="form-input" id="r-skills" placeholder="Python, SQL, Excel, Tableau, Machine Learning" oninput="updatePreview()" />
             </div>
-            <button class="ai-enhance-btn" id="enhanceBtn" onclick="enhanceResume()">✨ Enhance with AI</button>
+            <button class="ai-enhance-btn" id="enhanceBtn" onclick="enhanceResume()">âœ¨ Enhance with AI</button>
           </div>
         </div>
         <div>
           <div class="r-panel">
             <div class="r-panel-title">Live Preview</div>
             <div class="resume-preview" id="resumePreview">
-              <div style="color:#aaa;font-size:0.8rem;text-align:center;padding-top:3rem">Fill in your details to see your resume preview →</div>
+              <div style="color:#aaa;font-size:0.8rem;text-align:center;padding-top:3rem">Fill in your details to see your resume preview â†’</div>
             </div>
           </div>
         </div>
@@ -717,16 +717,16 @@ footer{
               <option value="enthusiastic">Enthusiastic & Energetic</option>
             </select>
           </div>
-          <button class="ai-enhance-btn" id="clBtn" onclick="generateCover()">✨ Generate Cover Letter</button>
+          <button class="ai-enhance-btn" id="clBtn" onclick="generateCover()">âœ¨ Generate Cover Letter</button>
         </div>
         <div style="position:relative">
           <div class="cl-output" id="clOutput">
             <div class="cl-placeholder">
-              <div class="cl-placeholder-icon">✍️</div>
+              <div class="cl-placeholder-icon">âœï¸</div>
               Fill in the details and click Generate
             </div>
           </div>
-          <button class="copy-btn" id="copyBtn" onclick="copyLetter()">📋 Copy</button>
+          <button class="copy-btn" id="copyBtn" onclick="copyLetter()">ðŸ“‹ Copy</button>
         </div>
       </div>
     </div>
@@ -754,13 +754,13 @@ footer{
 <section class="cta-section">
   <h2 class="cta-title">Ready to land your dream job?</h2>
   <p class="cta-sub">Free, fast, and powered by AI. No sign-up required.</p>
-  <a href="#app" class="btn-hero btn-hero-primary" style="font-size:1rem;padding:0.9rem 2.5rem;">Start Now — It's Free →</a>
+  <a href="#app" class="btn-hero btn-hero-primary" style="font-size:1rem;padding:0.9rem 2.5rem;">Start Now â€” It's Free â†’</a>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">Kaltum</div>
-  <div class="footer-copy">© 2026 Kaltum · AI Job Search & Resume Builder</div>
+  <div class="footer-copy">Â© 2026 Kaltum Â· AI Job Search & Resume Builder</div>
 </footer>
 
 <!-- ADD JOB MODAL -->
@@ -791,15 +791,15 @@ footer{
 <div class="toast" id="toast"><span class="toast-dot"></span><span id="toastMsg">Done!</span></div>
 
 <script>
-// ── Config ─────────────────────────────────────────────────────────
-// All AI calls route through your Render backend — API key stays server-side
+// â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// All AI calls route through your Render backend â€” API key stays server-side
 const API_BASE = 'https://kaltum-jobhub-api.onrender.com';
 
-// ── State ──────────────────────────────────────────────────────────
+// â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let jobs = JSON.parse(localStorage.getItem('kaltum-apps') || '[]');
 let trackerFilter = 'all';
 
-// ── API helper — central fetch with error handling ─────────────────
+// â”€â”€ API helper â€” central fetch with error handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   const res = await fetch(url, {
@@ -813,7 +813,7 @@ async function apiFetch(endpoint, options = {}) {
   return res.json();
 }
 
-// ── Tab switching ──────────────────────────────────────────────────
+// â”€â”€ Tab switching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function switchTab(id, el) {
   document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('on'));
   document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('on'));
@@ -822,7 +822,7 @@ function switchTab(id, el) {
   if (id === 'tracker') renderTracker();
 }
 
-// ── Toast ──────────────────────────────────────────────────────────
+// â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function toast(msg, type = 'success') {
   const t = document.getElementById('toast');
   const dot = t.querySelector('.toast-dot');
@@ -832,7 +832,7 @@ function toast(msg, type = 'success') {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// ── JOB SEARCH — routes through backend (no CORS issues) ───────────
+// â”€â”€ JOB SEARCH â€” routes through backend (no CORS issues) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function searchJobs() {
   const role = document.getElementById('search-role').value.trim();
   const loc  = document.getElementById('search-loc').value.trim();
@@ -850,15 +850,15 @@ async function searchJobs() {
     if (!matches.length) {
       document.getElementById('jobResults').innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">😕</div>
+          <div class="empty-icon">ðŸ˜•</div>
           <div class="empty-title">No jobs found for "${role}"</div>
           <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Try a broader title like "developer" or "analyst"</div>
         </div>`;
       return;
     }
 
-    const icons = {engineer:'⚙️',developer:'💻',designer:'🎨',analyst:'📊',manager:'🗂️',scientist:'🔬',data:'📈',product:'📦',marketing:'📣',sales:'💼'};
-    const getIcon = t => { t = (t||'').toLowerCase(); for (const [k,v] of Object.entries(icons)) if (t.includes(k)) return v; return '💼'; };
+    const icons = {engineer:'âš™ï¸',developer:'ðŸ’»',designer:'ðŸŽ¨',analyst:'ðŸ“Š',manager:'ðŸ—‚ï¸',scientist:'ðŸ”¬',data:'ðŸ“ˆ',product:'ðŸ“¦',marketing:'ðŸ“£',sales:'ðŸ’¼'};
+    const getIcon = t => { t = (t||'').toLowerCase(); for (const [k,v] of Object.entries(icons)) if (t.includes(k)) return v; return 'ðŸ’¼'; };
 
     document.getElementById('jobResults').innerHTML = `
       <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:1rem">
@@ -870,7 +870,7 @@ async function searchJobs() {
             <div class="job-card-logo">${getIcon(j.title)}</div>
             <div>
               <div class="job-card-title">${j.title || 'Role'}</div>
-              <div class="job-card-co">${j.company || 'Company'} · ${j.location || 'Remote'}</div>
+              <div class="job-card-co">${j.company || 'Company'} Â· ${j.location || 'Remote'}</div>
               <div class="job-card-tags">
                 <span class="jtag jtag-remote">Remote</span>
                 <span class="jtag jtag-ft">Full-time</span>
@@ -878,7 +878,7 @@ async function searchJobs() {
               </div>
             </div>
             <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:flex-end">
-              <button class="apply-btn" onclick="window.open('${j.url || '#'}','_blank')">View Job →</button>
+              <button class="apply-btn" onclick="window.open('${j.url || '#'}','_blank')">View Job â†’</button>
               <button class="apply-btn" style="font-size:0.7rem;padding:0.35rem 0.75rem"
                 onclick="quickSave('${(j.company||'').replace(/'/g,'')}','${(j.title||'').replace(/'/g,'')}')">+ Save</button>
             </div>
@@ -887,7 +887,7 @@ async function searchJobs() {
   } catch(e) {
     document.getElementById('jobResults').innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">⚠️</div>
+        <div class="empty-icon">âš ï¸</div>
         <div class="empty-title">Couldn't reach the server</div>
         <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">${e.message}</div>
       </div>`;
@@ -902,7 +902,7 @@ function quickSave(co, title) {
   toast(`${co} saved to tracker!`);
 }
 
-// ── RESUME BUILDER ─────────────────────────────────────────────────
+// â”€â”€ RESUME BUILDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function updatePreview() {
   const name    = document.getElementById('r-name').value    || 'Your Name';
   const role    = document.getElementById('r-role').value    || 'Your Target Role';
@@ -948,10 +948,10 @@ async function enhanceResume() {
     toast(`Enhancement failed: ${e.message}`, 'error');
   }
   btn.disabled = false;
-  btn.textContent = '✨ Enhance with AI';
+  btn.textContent = 'âœ¨ Enhance with AI';
 }
 
-// ── COVER LETTER ───────────────────────────────────────────────────
+// â”€â”€ COVER LETTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function generateCover() {
   const company = document.getElementById('cl-company').value.trim();
   const title = document.getElementById('cl-title').value.trim();
@@ -965,7 +965,7 @@ async function generateCover() {
   btn.disabled = true; btn.textContent = 'Generating...';
 
   const out = document.getElementById('clOutput');
-  out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">✍️</div>Writing your cover letter <span class="dots"><span></span><span></span><span></span></span></div>`;
+  out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">âœï¸</div>Writing your cover letter <span class="dots"><span></span><span></span><span></span></span></div>`;
   document.getElementById('copyBtn').style.display = 'none';
 
   try {
@@ -984,10 +984,10 @@ async function generateCover() {
     document.getElementById('copyBtn').style.display = 'block';
     toast('Cover letter ready!');
   } catch(e) {
-    out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">⚠️</div>Error: ${e.message}</div>`;
+    out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">âš ï¸</div>Error: ${e.message}</div>`;
     toast(`Generation failed: ${e.message}`, 'error');
   }
-  btn.disabled = false; btn.textContent = '✨ Generate Cover Letter';
+  btn.disabled = false; btn.textContent = 'âœ¨ Generate Cover Letter';
 }
 
 function copyLetter() {
@@ -995,13 +995,13 @@ function copyLetter() {
   toast('Copied to clipboard!');
 }
 
-// ── TRACKER ────────────────────────────────────────────────────────
+// â”€â”€ TRACKER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function renderTracker() {
   const list = document.getElementById('trackerList');
   const filtered = trackerFilter === 'all' ? jobs : jobs.filter(j => j.status === trackerFilter);
 
   if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">${trackerFilter === 'all' ? 'No applications yet' : 'No ' + trackerFilter + ' applications'}</div><div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Add your first job above</div></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">ðŸ“‹</div><div class="empty-title">${trackerFilter === 'all' ? 'No applications yet' : 'No ' + trackerFilter + ' applications'}</div><div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Add your first job above</div></div>`;
     return;
   }
 
@@ -1009,7 +1009,7 @@ function renderTracker() {
     <div class="tracker-row">
       <div>
         <div class="tr-title">${j.title}</div>
-        <div class="tr-co">${j.company} · ${j.location || 'Remote'}</div>
+        <div class="tr-co">${j.company} Â· ${j.location || 'Remote'}</div>
       </div>
       <div class="tr-date">${j.date || ''}</div>
       <span class="status-pill sp-${j.status}">${j.status.toUpperCase()}</span>
@@ -1020,7 +1020,7 @@ function renderTracker() {
         <option value="offer" ${j.status==='offer'?'selected':''}>Offer</option>
         <option value="rejected" ${j.status==='rejected'?'selected':''}>Rejected</option>
       </select>
-      <button class="del-btn" onclick="deleteJob(${j.id})">✕</button>
+      <button class="del-btn" onclick="deleteJob(${j.id})">âœ•</button>
     </div>
   `).join('');
 }
@@ -1044,7 +1044,7 @@ function deleteJob(id) {
 
 function saveJobs() { localStorage.setItem('kaltum-apps', JSON.stringify(jobs)); }
 
-// ── MODAL ──────────────────────────────────────────────────────────
+// â”€â”€ MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openAddModal() { document.getElementById('addModal').classList.add('open'); }
 function closeModal() { document.getElementById('addModal').classList.remove('open'); }
 
@@ -1094,4 +1094,5 @@ renderTracker();
 </script>
 </body>
 </html>
+
 
