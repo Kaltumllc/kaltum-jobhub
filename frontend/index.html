@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaltum — AI Job Search & Resume Builder</title>
+<meta name="description" content="Search jobs, build your resume, and generate cover letters powered by AI. Land your dream job faster with Kaltum.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090b;
+  --surface: #111113;
+  --surface2: #18181c;
+  --border: #27272f;
+  --text: #fafaf9;
+  --muted: #71717a;
+  --accent: #f97316;
+  --accent2: #06b6d4;
+  --purple: #a78bfa;
+  --green: #22c55e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Epilogue',sans-serif;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav {
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(9,9,11,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 3rem;
+}
+.nav-logo {
+  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
+  letter-spacing:-0.02em;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-links{display:flex;gap:0.3rem;align-items:center;}
+.nav-link {
+  background:none;border:none;color:var(--muted);
+  font-family:'Epilogue',sans-serif;font-size:0.85rem;font-weight:500;
+  padding:0.4rem 0.9rem;border-radius:6px;cursor:pointer;
+  transition:all 0.2s;text-decoration:none;display:inline-block;
+}
+.nav-link:hover{color:var(--text);background:var(--surface2);}
+.nav-cta {
+  background:var(--accent);color:white;
+  font-family:'Epilogue',sans-serif;font-size:0.85rem;font-weight:600;
+  padding:0.45rem 1.1rem;border-radius:7px;border:none;cursor:pointer;
+  transition:all 0.2s;text-decoration:none;
+}
+.nav-cta:hover{background:#ea6c10;transform:translateY(-1px);}
+
+/* ── HERO ── */
+.hero {
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:6rem 2rem 4rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero-glow {
+  position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  width:600px;height:400px;
+  background:radial-gradient(ellipse,rgba(249,115,22,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-glow2 {
+  position:absolute;bottom:10%;right:10%;
+  width:300px;height:300px;
+  background:radial-gradient(ellipse,rgba(167,139,250,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-badge {
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:0.35rem 0.9rem;
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);
+  margin-bottom:2rem;
+  animation:fadeDown 0.6s ease both;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.hero-title {
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.8rem,6vw,5rem);
+  font-weight:800;
+  line-height:1.05;
+  letter-spacing:-0.03em;
+  max-width:800px;
+  margin-bottom:1.5rem;
+  animation:fadeUp 0.7s 0.1s ease both;
+}
+.hero-title .line2{
+  background:linear-gradient(135deg,var(--accent) 0%,var(--purple) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub {
+  font-size:1.1rem;color:var(--muted);font-weight:400;
+  max-width:520px;line-height:1.65;
+  margin-bottom:2.5rem;
+  animation:fadeUp 0.7s 0.2s ease both;
+}
+.hero-btns {
+  display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;
+  margin-bottom:3.5rem;
+  animation:fadeUp 0.7s 0.3s ease both;
+}
+.btn-hero {
+  padding:0.8rem 2rem;border-radius:9px;
+  font-family:'Epilogue',sans-serif;font-size:0.95rem;font-weight:600;
+  cursor:pointer;border:none;transition:all 0.2s;text-decoration:none;
+  display:inline-block;
+}
+.btn-hero-primary{background:var(--accent);color:white;}
+.btn-hero-primary:hover{background:#ea6c10;transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,0.3);}
+.btn-hero-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border);}
+.btn-hero-ghost:hover{border-color:var(--muted);transform:translateY(-2px);}
+
+.hero-stats {
+  display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp 0.7s 0.4s ease both;
+}
+.hero-stat-n {
+  font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;
+  background:linear-gradient(135deg,var(--text),var(--muted));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-stat-l{font-size:0.75rem;color:var(--muted);margin-top:0.1rem;font-family:'JetBrains Mono',monospace;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── FEATURES ── */
+.section{padding:6rem 2rem;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.section-label {
+  font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+  color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;
+  margin-bottom:1rem;
+}
+.section-title {
+  font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);
+  font-weight:800;letter-spacing:-0.02em;
+  max-width:600px;line-height:1.15;
+  margin-bottom:1rem;
+}
+.section-sub{color:var(--muted);font-size:1rem;max-width:480px;line-height:1.65;margin-bottom:3rem;}
+
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:14px;
+  overflow:hidden;
+}
+.feat {
+  background:var(--surface);padding:2rem;
+  transition:background 0.2s;
+}
+.feat:hover{background:var(--surface2);}
+.feat-icon {
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:1.2rem;
+}
+.feat-icon.f1{background:rgba(249,115,22,0.12);}
+.feat-icon.f2{background:rgba(6,182,212,0.12);}
+.feat-icon.f3{background:rgba(167,139,250,0.12);}
+.feat-icon.f4{background:rgba(34,197,94,0.12);}
+.feat-icon.f5{background:rgba(249,115,22,0.12);}
+.feat-icon.f6{background:rgba(6,182,212,0.12);}
+.feat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.5rem;}
+.feat-desc{color:var(--muted);font-size:0.85rem;line-height:1.6;}
+
+/* ── HOW IT WORKS ── */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+.how-step{text-align:center;padding:1.5rem 1rem;}
+.how-num {
+  font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;
+  color:var(--border);line-height:1;margin-bottom:1rem;
+}
+.how-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.5rem;}
+.how-desc{color:var(--muted);font-size:0.82rem;line-height:1.6;}
+
+/* ── APP PREVIEW ── */
+.app-section{padding:4rem 2rem 6rem;}
+.app-inner{max-width:1100px;margin:0 auto;}
+.app-tabs{
+  display:flex;gap:0.5rem;margin-bottom:1.5rem;
+  border-bottom:1px solid var(--border);padding-bottom:0.5rem;
+}
+.app-tab {
+  font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+  padding:0.4rem 1rem;border-radius:6px;border:none;
+  background:none;color:var(--muted);cursor:pointer;transition:all 0.2s;
+}
+.app-tab:hover{color:var(--text);}
+.app-tab.on{background:var(--surface2);color:var(--text);}
+.app-panel{display:none;}
+.app-panel.on{display:block;animation:fadeUp 0.3s ease;}
+
+/* ── JOB SEARCH APP ── */
+.search-bar {
+  display:flex;gap:0.7rem;margin-bottom:1.5rem;
+}
+.search-input {
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:0.75rem 1.1rem;
+  font-family:'Epilogue',sans-serif;font-size:0.9rem;color:var(--text);outline:none;
+  transition:border-color 0.2s;
+}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--muted);}
+.search-btn {
+  background:var(--accent);color:white;border:none;
+  border-radius:9px;padding:0.75rem 1.5rem;
+  font-family:'Epilogue',sans-serif;font-size:0.9rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.search-btn:hover{background:#ea6c10;}
+.search-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+.job-cards{display:flex;flex-direction:column;gap:0.8rem;}
+.job-card {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.2rem 1.4rem;
+  display:grid;grid-template-columns:48px 1fr auto;
+  align-items:center;gap:1.2rem;
+  transition:border-color 0.2s,transform 0.2s;
+  cursor:pointer;
+}
+.job-card:hover{border-color:var(--accent);transform:translateX(3px);}
+.job-card-logo {
+  width:48px;height:48px;border-radius:10px;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+}
+.job-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;margin-bottom:0.2rem;}
+.job-card-co{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);}
+.job-card-tags{display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;}
+.jtag {
+  font-family:'JetBrains Mono',monospace;font-size:0.62rem;
+  padding:0.15rem 0.5rem;border-radius:4px;
+}
+.jtag-remote{background:rgba(6,182,212,0.1);color:var(--accent2);}
+.jtag-ft{background:rgba(34,197,94,0.1);color:var(--green);}
+.jtag-salary{background:rgba(249,115,22,0.1);color:var(--accent);}
+.apply-btn {
+  background:var(--surface2);color:var(--text);border:1px solid var(--border);
+  border-radius:7px;padding:0.5rem 1rem;
+  font-family:'Epilogue',sans-serif;font-size:0.78rem;font-weight:600;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.apply-btn:hover{background:var(--accent);border-color:var(--accent);color:white;}
+
+.loading-jobs{
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;font-size:0.78rem;gap:0.8rem;
+}
+.spin{
+  width:18px;height:18px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESUME BUILDER ── */
+.resume-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.r-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;}
+.r-panel-title{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;
+  margin-bottom:1.2rem;display:flex;align-items:center;gap:0.6rem;
+}
+.r-panel-title::before{content:'';width:3px;height:16px;background:var(--accent);border-radius:2px;display:block;}
+.form-group{margin-bottom:0.9rem;}
+.form-label{
+  display:block;font-family:'JetBrains Mono',monospace;font-size:0.64rem;
+  text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.35rem;
+}
+.form-input,.form-textarea,.form-select{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:7px;font-family:'Epilogue',sans-serif;font-size:0.83rem;
+  color:var(--text);padding:0.6rem 0.85rem;outline:none;transition:border-color 0.2s;
+}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--muted);}
+.form-textarea{resize:vertical;min-height:80px;}
+.form-select option{background:var(--surface2);}
+
+.resume-preview {
+  background:white;color:#111;border-radius:8px;
+  padding:2rem;font-size:0.8rem;line-height:1.6;
+  min-height:400px;
+}
+.rp-name{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:#111;margin-bottom:0.2rem;}
+.rp-title{font-size:0.85rem;color:#666;margin-bottom:0.8rem;}
+.rp-contact{font-size:0.75rem;color:#888;font-family:'JetBrains Mono',monospace;margin-bottom:1rem;}
+.rp-divider{height:2px;background:#111;margin-bottom:0.8rem;}
+.rp-section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;color:#111;}
+.rp-item{margin-bottom:0.8rem;}
+.rp-item-title{font-weight:700;font-size:0.82rem;}
+.rp-item-sub{font-size:0.75rem;color:#666;}
+.rp-item-desc{font-size:0.75rem;color:#444;margin-top:0.2rem;}
+.rp-skills{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.rp-skill{background:#f4f4f5;border-radius:4px;padding:0.15rem 0.5rem;font-size:0.72rem;font-family:'JetBrains Mono',monospace;}
+.ai-enhance-btn {
+  width:100%;margin-top:0.8rem;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  color:white;border:none;border-radius:8px;
+  padding:0.7rem;font-family:'Epilogue',sans-serif;font-size:0.85rem;font-weight:600;
+  cursor:pointer;transition:opacity 0.2s;
+}
+.ai-enhance-btn:hover{opacity:0.9;}
+.ai-enhance-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* ── COVER LETTER ── */
+.cl-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem;}
+.cl-output {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;
+  min-height:380px;
+  font-size:0.84rem;line-height:1.8;white-space:pre-wrap;
+  font-family:'Epilogue',sans-serif;color:var(--text);
+  position:relative;
+}
+.cl-placeholder{
+  color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+  display:flex;align-items:center;justify-content:center;height:100%;
+  flex-direction:column;gap:0.8rem;text-align:center;
+}
+.cl-placeholder-icon{font-size:2.5rem;opacity:0.3;}
+.copy-btn{
+  position:absolute;top:1rem;right:1rem;display:none;
+  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+  padding:0.3rem 0.7rem;cursor:pointer;transition:all 0.2s;
+}
+.copy-btn:hover{color:var(--text);border-color:var(--muted);}
+
+/* ── TRACKER ── */
+.tracker-header{display:flex;gap:0.5rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+.filter-pills{display:flex;gap:0.4rem;flex-wrap:wrap;}
+.fpill {
+  font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+  padding:0.3rem 0.8rem;border-radius:20px;
+  border:1px solid var(--border);background:none;color:var(--muted);
+  cursor:pointer;transition:all 0.18s;
+}
+.fpill:hover,.fpill.on{background:var(--accent);border-color:var(--accent);color:white;}
+.tracker-list{display:flex;flex-direction:column;gap:0.6rem;}
+.tracker-row {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:1rem 1.2rem;
+  display:grid;grid-template-columns:1fr auto auto auto;
+  align-items:center;gap:1rem;
+  transition:border-color 0.2s;
+}
+.tracker-row:hover{border-color:var(--border);background:var(--surface2);}
+.tr-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;}
+.tr-co{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);margin-top:0.15rem;}
+.tr-date{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);}
+.status-pill{
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;
+  padding:0.25rem 0.65rem;border-radius:20px;border:1px solid;white-space:nowrap;
+}
+.sp-saved{color:var(--muted);border-color:var(--border);}
+.sp-applied{color:var(--accent2);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.08);}
+.sp-interview{color:#f59e0b;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);}
+.sp-offer{color:var(--green);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08);}
+.sp-rejected{color:var(--accent);border-color:rgba(249,115,22,0.3);background:rgba(249,115,22,0.08);}
+.status-select{
+  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+  padding:0.3rem 0.5rem;cursor:pointer;outline:none;
+}
+.del-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:0.9rem;padding:0.2rem 0.4rem;border-radius:4px;
+  transition:color 0.2s;
+}
+.del-btn:hover{color:var(--accent);}
+
+/* ── ADD JOB MODAL ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:2rem;width:100%;max-width:480px;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 60px rgba(0,0,0,0.5);
+  animation:popIn 0.2s ease;
+}
+@keyframes popIn{from{transform:scale(0.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1.4rem;}
+.modal-row{display:flex;gap:0.7rem;justify-content:flex-end;margin-top:1.4rem;}
+.btn-modal-cancel{
+  background:none;border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);font-family:'Epilogue',sans-serif;font-size:0.83rem;font-weight:600;
+  padding:0.55rem 1.1rem;cursor:pointer;transition:all 0.2s;
+}
+.btn-modal-cancel:hover{color:var(--text);border-color:var(--muted);}
+.btn-modal-save{
+  background:var(--accent);border:none;border-radius:7px;
+  color:white;font-family:'Epilogue',sans-serif;font-size:0.83rem;font-weight:600;
+  padding:0.55rem 1.3rem;cursor:pointer;transition:background 0.2s;
+}
+.btn-modal-save:hover{background:#ea6c10;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:0.8rem 1.3rem;
+  font-size:0.83rem;display:flex;align-items:center;gap:0.6rem;
+  z-index:999;transform:translateY(80px);opacity:0;
+  transition:all 0.3s;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+
+/* ── CTA SECTION ── */
+.cta-section{
+  padding:6rem 2rem;text-align:center;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 100%);
+  border-top:1px solid var(--border);
+}
+.cta-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;}
+.cta-sub{color:var(--muted);font-size:1rem;margin-bottom:2.5rem;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);padding:2rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;}
+.footer-copy{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted);}
+
+/* ── TYPING DOTS ── */
+.dots{display:inline-flex;gap:4px;align-items:center;}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:3rem;color:var(--muted);
+  border:1px dashed var(--border);border-radius:12px;
+}
+.empty-icon{font-size:2.5rem;margin-bottom:0.8rem;}
+.empty-title{font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--text);margin-bottom:0.4rem;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav{padding:0 1.5rem;}
+  .features-grid{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:repeat(2,1fr);}
+  .resume-grid,.cl-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:2rem;}
+  .search-bar{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Kaltum</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#how">How it works</a>
+    <a class="nav-link" href="#app">Try it</a>
+    <a class="nav-cta" href="#app">Get Started Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    AI-powered · Free to use · No sign-up required
+  </div>
+  <h1 class="hero-title">
+    Your AI job search<br>
+    <span class="line2">starts here.</span>
+  </h1>
+  <p class="hero-sub">Search thousands of jobs, build a standout resume, and generate personalized cover letters — all powered by AI. Land your dream job faster.</p>
+  <div class="hero-btns">
+    <a href="#app" class="btn-hero btn-hero-primary">Start Job Search →</a>
+    <a href="#features" class="btn-hero btn-hero-ghost">See how it works</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-n">10k+</div>
+      <div class="hero-stat-l">Jobs indexed daily</div>
+    </div>
+    <div>
+      <div class="hero-stat-n">AI</div>
+      <div class="hero-stat-l">Cover letters & resumes</div>
+    </div>
+    <div>
+      <div class="hero-stat-n">Free</div>
+      <div class="hero-stat-l">Always free to use</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-label">What Kaltum does</div>
+    <h2 class="section-title">Everything you need to land the job.</h2>
+    <p class="section-sub">One platform to search, apply, track, and stand out — no more juggling 10 tabs.</p>
+    <div class="features-grid">
+      <div class="feat">
+        <div class="feat-icon f1">🔍</div>
+        <div class="feat-title">Smart Job Search</div>
+        <div class="feat-desc">Search real jobs from RemoteOK, LinkedIn, and more in one place. Filter by role, location, salary, and work type.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon f2">📄</div>
+        <div class="feat-title">AI Resume Builder</div>
+        <div class="feat-desc">Build a professional resume in minutes. Claude AI enhances your bullet points and tailors it to each job automatically.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon f3">✍️</div>
+        <div class="feat-title">Cover Letter AI</div>
+        <div class="feat-desc">Paste a job description and get a personalized, human-sounding cover letter in seconds. Never write one from scratch again.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon f4">📊</div>
+        <div class="feat-title">Application Tracker</div>
+        <div class="feat-desc">Track every application in one dashboard. Know what's saved, applied, in interview, or needs a follow-up.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon f5">🎯</div>
+        <div class="feat-title">Job Match Score</div>
+        <div class="feat-desc">See how well your profile matches each job before applying. AI tells you what to highlight and what's missing.</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon f6">🔔</div>
+        <div class="feat-title">Follow-up Reminders</div>
+        <div class="feat-desc">Never ghost a recruiter again. Kaltum reminds you when to follow up on applications and interviews.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="section-inner">
+    <div class="section-label">Simple process</div>
+    <h2 class="section-title">From search to offer in 4 steps.</h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <div class="how-title">Search & Discover</div>
+        <div class="how-desc">Enter your desired role and location. Kaltum pulls real jobs from multiple sources instantly.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <div class="how-title">Build Your Resume</div>
+        <div class="how-desc">Fill in your experience. AI enhances your descriptions and formats everything beautifully.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <div class="how-title">Generate Cover Letter</div>
+        <div class="how-desc">Paste the job description and get a tailored, compelling cover letter in under 10 seconds.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <div class="how-title">Track & Follow Up</div>
+        <div class="how-desc">Log your applications, track statuses, and get reminders to follow up at the right time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<section class="app-section" id="app">
+  <div class="app-inner">
+    <div class="section-label" style="margin-bottom:0.8rem">Live App</div>
+    <h2 class="section-title" style="margin-bottom:2rem">Try Kaltum right now.</h2>
+    <div class="app-tabs">
+      <button class="app-tab on" onclick="switchTab('search',this)">🔍 Job Search</button>
+      <button class="app-tab" onclick="switchTab('resume',this)">📄 Resume Builder</button>
+      <button class="app-tab" onclick="switchTab('cover',this)">✍️ Cover Letter</button>
+      <button class="app-tab" onclick="switchTab('tracker',this)">📊 My Applications</button>
+    </div>
+
+    <!-- JOB SEARCH -->
+    <div class="app-panel on" id="panel-search">
+      <div class="search-bar">
+        <input class="search-input" id="search-role" placeholder="Job title (e.g. Data Analyst, Software Engineer)" />
+        <input class="search-input" id="search-loc" placeholder="Location (e.g. Remote, New York)" style="max-width:220px" />
+        <button class="search-btn" id="searchBtn" onclick="searchJobs()">Search Jobs</button>
+      </div>
+      <div id="jobResults">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Search for your dream job</div>
+          <div style="font-size:0.82rem;margin-top:0.3rem">Enter a role above and hit Search</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUME BUILDER -->
+    <div class="app-panel" id="panel-resume">
+      <div class="resume-grid">
+        <div>
+          <div class="r-panel">
+            <div class="r-panel-title">Your Info</div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" id="r-name" placeholder="Jane Smith" oninput="updatePreview()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Role</label>
+              <input class="form-input" id="r-role" placeholder="Data Analyst" oninput="updatePreview()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email & Phone</label>
+              <input class="form-input" id="r-contact" placeholder="jane@email.com · (555) 123-4567" oninput="updatePreview()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Work Experience</label>
+              <textarea class="form-textarea" id="r-exp" placeholder="Job Title — Company (Year–Year)&#10;• What you did and achieved..." oninput="updatePreview()"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Education</label>
+              <input class="form-input" id="r-edu" placeholder="B.S. Computer Science — MIT, 2022" oninput="updatePreview()" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Skills (comma separated)</label>
+              <input class="form-input" id="r-skills" placeholder="Python, SQL, Excel, Tableau, Machine Learning" oninput="updatePreview()" />
+            </div>
+            <button class="ai-enhance-btn" id="enhanceBtn" onclick="enhanceResume()">✨ Enhance with AI</button>
+          </div>
+        </div>
+        <div>
+          <div class="r-panel">
+            <div class="r-panel-title">Live Preview</div>
+            <div class="resume-preview" id="resumePreview">
+              <div style="color:#aaa;font-size:0.8rem;text-align:center;padding-top:3rem">Fill in your details to see your resume preview →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COVER LETTER -->
+    <div class="app-panel" id="panel-cover">
+      <div class="cl-grid">
+        <div class="r-panel">
+          <div class="r-panel-title">Job Details</div>
+          <div class="form-group">
+            <label class="form-label">Company Name</label>
+            <input class="form-input" id="cl-company" placeholder="e.g. Google" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Job Title</label>
+            <input class="form-input" id="cl-title" placeholder="e.g. Data Scientist" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Job Description</label>
+            <textarea class="form-textarea" id="cl-jd" placeholder="Paste key requirements or the full job description..." style="min-height:110px"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Background</label>
+            <textarea class="form-textarea" id="cl-bg" placeholder="Briefly describe your experience and top skills..." style="min-height:80px"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tone</label>
+            <select class="form-select" id="cl-tone">
+              <option value="professional">Professional & Confident</option>
+              <option value="warm">Warm & Personable</option>
+              <option value="concise">Concise & Direct</option>
+              <option value="enthusiastic">Enthusiastic & Energetic</option>
+            </select>
+          </div>
+          <button class="ai-enhance-btn" id="clBtn" onclick="generateCover()">✨ Generate Cover Letter</button>
+        </div>
+        <div style="position:relative">
+          <div class="cl-output" id="clOutput">
+            <div class="cl-placeholder">
+              <div class="cl-placeholder-icon">✍️</div>
+              Fill in the details and click Generate
+            </div>
+          </div>
+          <button class="copy-btn" id="copyBtn" onclick="copyLetter()">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACKER -->
+    <div class="app-panel" id="panel-tracker">
+      <div class="tracker-header">
+        <div class="filter-pills">
+          <button class="fpill on" onclick="filterTracker('all',this)">All</button>
+          <button class="fpill" onclick="filterTracker('saved',this)">Saved</button>
+          <button class="fpill" onclick="filterTracker('applied',this)">Applied</button>
+          <button class="fpill" onclick="filterTracker('interview',this)">Interview</button>
+          <button class="fpill" onclick="filterTracker('offer',this)">Offer</button>
+          <button class="fpill" onclick="filterTracker('rejected',this)">Rejected</button>
+        </div>
+        <button onclick="openAddModal()" style="background:var(--accent);color:white;border:none;border-radius:7px;padding:0.5rem 1rem;font-family:'Epilogue',sans-serif;font-size:0.83rem;font-weight:600;cursor:pointer;">+ Add Job</button>
+      </div>
+      <div class="tracker-list" id="trackerList"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">Ready to land your dream job?</h2>
+  <p class="cta-sub">Free, fast, and powered by AI. No sign-up required.</p>
+  <a href="#app" class="btn-hero btn-hero-primary" style="font-size:1rem;padding:0.9rem 2.5rem;">Start Now — It's Free →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Kaltum</div>
+  <div class="footer-copy">© 2026 Kaltum · AI Job Search & Resume Builder</div>
+</footer>
+
+<!-- ADD JOB MODAL -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">Add Application</div>
+    <div class="form-group"><label class="form-label">Company</label><input class="form-input" id="m-co" placeholder="Company name" /></div>
+    <div class="form-group"><label class="form-label">Job Title</label><input class="form-input" id="m-title" placeholder="Position title" /></div>
+    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="m-loc" placeholder="City or Remote" /></div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select class="form-select" id="m-status">
+        <option value="saved">Saved</option>
+        <option value="applied">Applied</option>
+        <option value="interview">Interview</option>
+        <option value="offer">Offer</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="m-notes" placeholder="Any notes..."></textarea></div>
+    <div class="modal-row">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="saveJob()">Save Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="toast-dot"></span><span id="toastMsg">Done!</span></div>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────────
+// All AI calls route through your Render backend — API key stays server-side
+const API_BASE = 'https://kaltum-jobsearch.onrender.com';
+
+// ── State ──────────────────────────────────────────────────────────
+let jobs = JSON.parse(localStorage.getItem('kaltum-apps') || '[]');
+let trackerFilter = 'all';
+
+// ── API helper — central fetch with error handling ─────────────────
+async function apiFetch(endpoint, options = {}) {
+  const url = `${API_BASE}${endpoint}`;
+  const res = await fetch(url, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || `API error ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── Tab switching ──────────────────────────────────────────────────
+function switchTab(id, el) {
+  document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('panel-' + id).classList.add('on');
+  if (id === 'tracker') renderTracker();
+}
+
+// ── Toast ──────────────────────────────────────────────────────────
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const dot = t.querySelector('.toast-dot');
+  document.getElementById('toastMsg').textContent = msg;
+  dot.style.background = type === 'error' ? '#f97316' : '#22c55e';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── JOB SEARCH — routes through backend (no CORS issues) ───────────
+async function searchJobs() {
+  const role = document.getElementById('search-role').value.trim();
+  const loc  = document.getElementById('search-loc').value.trim();
+  if (!role) { toast('Enter a job title first', 'error'); return; }
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true; btn.textContent = 'Searching...';
+  document.getElementById('jobResults').innerHTML =
+    `<div class="loading-jobs"><div class="spin"></div> Finding jobs for "${role}"...</div>`;
+
+  try {
+    const data = await apiFetch(`/jobs/search?role=${encodeURIComponent(role)}&location=${encodeURIComponent(loc)}&limit=15`);
+    const matches = data.jobs || [];
+
+    if (!matches.length) {
+      document.getElementById('jobResults').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">😕</div>
+          <div class="empty-title">No jobs found for "${role}"</div>
+          <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Try a broader title like "developer" or "analyst"</div>
+        </div>`;
+      return;
+    }
+
+    const icons = {engineer:'⚙️',developer:'💻',designer:'🎨',analyst:'📊',manager:'🗂️',scientist:'🔬',data:'📈',product:'📦',marketing:'📣',sales:'💼'};
+    const getIcon = t => { t = (t||'').toLowerCase(); for (const [k,v] of Object.entries(icons)) if (t.includes(k)) return v; return '💼'; };
+
+    document.getElementById('jobResults').innerHTML = `
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:1rem">
+        ${matches.length} jobs found for "${role}"
+      </div>
+      <div class="job-cards">
+        ${matches.map(j => `
+          <div class="job-card">
+            <div class="job-card-logo">${getIcon(j.title)}</div>
+            <div>
+              <div class="job-card-title">${j.title || 'Role'}</div>
+              <div class="job-card-co">${j.company || 'Company'} · ${j.location || 'Remote'}</div>
+              <div class="job-card-tags">
+                <span class="jtag jtag-remote">Remote</span>
+                <span class="jtag jtag-ft">Full-time</span>
+                ${j.salary ? `<span class="jtag jtag-salary">${j.salary}</span>` : ''}
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:flex-end">
+              <button class="apply-btn" onclick="window.open('${j.url || '#'}','_blank')">View Job →</button>
+              <button class="apply-btn" style="font-size:0.7rem;padding:0.35rem 0.75rem"
+                onclick="quickSave('${(j.company||'').replace(/'/g,'')}','${(j.title||'').replace(/'/g,'')}')">+ Save</button>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) {
+    document.getElementById('jobResults').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Couldn't reach the server</div>
+        <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">${e.message}</div>
+      </div>`;
+  }
+  btn.disabled = false; btn.textContent = 'Search Jobs';
+}
+
+function quickSave(co, title) {
+  jobs.unshift({ id: Date.now(), company: co, title, location: 'Remote', status: 'saved',
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}) });
+  localStorage.setItem('kaltum-apps', JSON.stringify(jobs));
+  toast(`${co} saved to tracker!`);
+}
+
+// ── RESUME BUILDER ─────────────────────────────────────────────────
+function updatePreview() {
+  const name    = document.getElementById('r-name').value    || 'Your Name';
+  const role    = document.getElementById('r-role').value    || 'Your Target Role';
+  const contact = document.getElementById('r-contact').value || 'email@example.com';
+  const exp     = document.getElementById('r-exp').value     || '';
+  const edu = document.getElementById('r-edu').value || '';
+  const skillsRaw = document.getElementById('r-skills').value || '';
+  const skills = skillsRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+  document.getElementById('resumePreview').innerHTML = `
+    <div class="rp-name">${name}</div>
+    <div class="rp-title">${role}</div>
+    <div class="rp-contact">${contact}</div>
+    <div class="rp-divider"></div>
+    ${exp ? `<div class="rp-section-title">Experience</div>
+    <div class="rp-item"><div class="rp-item-desc" style="white-space:pre-wrap">${exp}</div></div>` : ''}
+    ${edu ? `<div class="rp-section-title" style="margin-top:0.8rem">Education</div>
+    <div class="rp-item"><div class="rp-item-title">${edu}</div></div>` : ''}
+    ${skills.length ? `<div class="rp-section-title" style="margin-top:0.8rem">Skills</div>
+    <div class="rp-skills">${skills.map(s => `<span class="rp-skill">${s}</span>`).join('')}</div>` : ''}
+  `;
+}
+
+async function enhanceResume() {
+  const exp = document.getElementById('r-exp').value.trim();
+  const role = document.getElementById('r-role').value.trim();
+  if (!exp) { toast('Add your experience first'); return; }
+
+  const btn = document.getElementById('enhanceBtn');
+  btn.disabled = true; btn.textContent = 'Enhancing...';
+
+  try {
+    const data = await apiFetch('/ai/enhance-resume', {
+      method: 'POST',
+      body: JSON.stringify({ experience: exp, target_role: role })
+    });
+    if (data.enhanced) {
+      document.getElementById('r-exp').value = data.enhanced;
+      updatePreview();
+      toast('Resume enhanced by AI!');
+    }
+  } catch(e) {
+    toast(`Enhancement failed: ${e.message}`, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = '✨ Enhance with AI';
+}
+
+// ── COVER LETTER ───────────────────────────────────────────────────
+async function generateCover() {
+  const company = document.getElementById('cl-company').value.trim();
+  const title = document.getElementById('cl-title').value.trim();
+  const jd = document.getElementById('cl-jd').value.trim();
+  const bg = document.getElementById('cl-bg').value.trim();
+  const tone = document.getElementById('cl-tone').value;
+
+  if (!company || !title) { toast('Enter company and job title'); return; }
+
+  const btn = document.getElementById('clBtn');
+  btn.disabled = true; btn.textContent = 'Generating...';
+
+  const out = document.getElementById('clOutput');
+  out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">✍️</div>Writing your cover letter <span class="dots"><span></span><span></span><span></span></span></div>`;
+  document.getElementById('copyBtn').style.display = 'none';
+
+  try {
+    const data = await apiFetch('/ai/cover-letter', {
+      method: 'POST',
+      body: JSON.stringify({
+        company, title,
+        job_description: jd,
+        background: bg,
+        tone
+      })
+    });
+    const letter = data.letter || 'Unable to generate. Please try again.';
+    out.innerHTML = '';
+    out.textContent = letter;
+    document.getElementById('copyBtn').style.display = 'block';
+    toast('Cover letter ready!');
+  } catch(e) {
+    out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">⚠️</div>Error: ${e.message}</div>`;
+    toast(`Generation failed: ${e.message}`, 'error');
+  }
+  btn.disabled = false; btn.textContent = '✨ Generate Cover Letter';
+}
+
+function copyLetter() {
+  navigator.clipboard.writeText(document.getElementById('clOutput').textContent);
+  toast('Copied to clipboard!');
+}
+
+// ── TRACKER ────────────────────────────────────────────────────────
+function renderTracker() {
+  const list = document.getElementById('trackerList');
+  const filtered = trackerFilter === 'all' ? jobs : jobs.filter(j => j.status === trackerFilter);
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">${trackerFilter === 'all' ? 'No applications yet' : 'No ' + trackerFilter + ' applications'}</div><div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Add your first job above</div></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(j => `
+    <div class="tracker-row">
+      <div>
+        <div class="tr-title">${j.title}</div>
+        <div class="tr-co">${j.company} · ${j.location || 'Remote'}</div>
+      </div>
+      <div class="tr-date">${j.date || ''}</div>
+      <span class="status-pill sp-${j.status}">${j.status.toUpperCase()}</span>
+      <select class="status-select" onchange="updateStatus(${j.id},this.value)">
+        <option value="saved" ${j.status==='saved'?'selected':''}>Saved</option>
+        <option value="applied" ${j.status==='applied'?'selected':''}>Applied</option>
+        <option value="interview" ${j.status==='interview'?'selected':''}>Interview</option>
+        <option value="offer" ${j.status==='offer'?'selected':''}>Offer</option>
+        <option value="rejected" ${j.status==='rejected'?'selected':''}>Rejected</option>
+      </select>
+      <button class="del-btn" onclick="deleteJob(${j.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function filterTracker(f, el) {
+  trackerFilter = f;
+  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  renderTracker();
+}
+
+function updateStatus(id, status) {
+  const j = jobs.find(x => x.id === id);
+  if (j) { j.status = status; saveJobs(); renderTracker(); }
+}
+
+function deleteJob(id) {
+  jobs = jobs.filter(x => x.id !== id);
+  saveJobs(); renderTracker(); toast('Removed');
+}
+
+function saveJobs() { localStorage.setItem('kaltum-apps', JSON.stringify(jobs)); }
+
+// ── MODAL ──────────────────────────────────────────────────────────
+function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+
+function saveJob() {
+  const co = document.getElementById('m-co').value.trim();
+  const title = document.getElementById('m-title').value.trim();
+  if (!co || !title) { toast('Enter company and title'); return; }
+  jobs.unshift({
+    id: Date.now(), company: co, title,
+    location: document.getElementById('m-loc').value.trim() || 'Remote',
+    status: document.getElementById('m-status').value,
+    notes: document.getElementById('m-notes').value.trim(),
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})
+  });
+  saveJobs(); closeModal(); renderTracker();
+  ['m-co','m-title','m-loc','m-notes'].forEach(id => document.getElementById(id).value = '');
+  toast(`${co} added!`);
+}
+
+document.getElementById('addModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.getElementById('search-role').addEventListener('keydown', e => { if (e.key === 'Enter') searchJobs(); });
+
+renderTracker();
+</script>
+</body>
+</html>
