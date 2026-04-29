@@ -11,7 +11,7 @@ import anthropic
 import httpx
 import os
 
-app = FastAPI(title="Kaltum JobHub API", version="1.2.0")
+app = FastAPI(title="Kaltum JobHub API", version="1.3.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,7 +44,7 @@ class ResumeEnhanceRequest(BaseModel):
 # Health
 @app.get("/")
 def root():
-    return {"status": "Kaltum JobHub API running", "version": "1.2.0"}
+    return {"status": "Kaltum JobHub API running", "version": "1.3.0"}
 
 
 @app.get("/health")
@@ -141,6 +141,7 @@ async def search_jobs(
     role: str,
     location: str = "usa",
     company: str = "",
+    source: str = "all",
     limit: int = 15
 ):
     """
@@ -153,6 +154,7 @@ async def search_jobs(
     role_clean = role.strip()
     location_clean = location.strip() or "usa"
     company_clean = company.strip()
+    source_clean = source.strip().lower() or "all"
     safe_limit = max(1, min(limit, 50))
 
     if not role_clean:
@@ -165,7 +167,7 @@ async def search_jobs(
     all_jobs = []
 
     # 1. Adzuna USA job search
-    if ADZUNA_APP_ID and ADZUNA_APP_KEY:
+    if source_clean in ["all", "adzuna"] and ADZUNA_APP_ID and ADZUNA_APP_KEY:
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 response = await client.get(
@@ -194,7 +196,7 @@ async def search_jobs(
             all_jobs = []
 
     # 2. USAJOBS federal job search
-    if not all_jobs and USAJOBS_API_KEY and USAJOBS_USER_AGENT:
+    if (source_clean in ["all", "usajobs", "federal", "government"]) and (not all_jobs or source_clean in ["usajobs", "federal", "government"]) and USAJOBS_API_KEY and USAJOBS_USER_AGENT:
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 response = await client.get(
@@ -222,7 +224,7 @@ async def search_jobs(
             all_jobs = []
 
     # 3. Remotive fallback
-    if not all_jobs:
+    if source_clean in ["all", "remotive"] and not all_jobs:
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 response = await client.get(
@@ -248,6 +250,7 @@ async def search_jobs(
         "role": role_clean,
         "location": location_clean,
         "company": company_clean or "all",
+        "requested_source": source_clean,
         "source": all_jobs[0].get("source") if all_jobs else "None"
     }
 

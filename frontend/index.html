@@ -238,7 +238,10 @@ body.light-theme nav {
 
 /*  JOB SEARCH APP  */
 .search-bar {
-  display:flex;gap:0.7rem;margin-bottom:1.5rem;
+  display:flex;
+  gap:0.75rem;
+  align-items:center;
+  flex-wrap:wrap;
 }
 .search-input {
   flex:1;background:var(--surface);border:1px solid var(--border);
@@ -771,6 +774,13 @@ body.light-theme .kaltum-mode-switch__label--dark {
           <option value="ups">UPS</option>
         </select>
 
+        <select class="form-select company-select" id="search-source" aria-label="Job source filter">
+          <option value="all">All Sources</option>
+          <option value="adzuna">Adzuna USA Jobs</option>
+          <option value="usajobs">USAJOBS Federal</option>
+          <option value="remotive">Remotive Remote</option>
+        </select>
+
         <button class="search-btn" id="searchBtn" onclick="searchJobs()">Search Jobs</button>
       </div>
       <div id="jobResults">
@@ -992,6 +1002,7 @@ async function searchJobs() {
   const role = document.getElementById('search-role').value.trim();
   const location = document.getElementById('search-loc').value.trim();
   const company = document.getElementById('search-company') ? document.getElementById('search-company').value.trim() : '';
+  const source = document.getElementById('search-source') ? document.getElementById('search-source').value.trim() : 'all';
 
   if (!role) {
     toast('Enter a job title first', 'error');
@@ -1013,7 +1024,7 @@ async function searchJobs() {
 
   try {
     const data = await apiFetch(
-      `/jobs/search?role=${encodeURIComponent(role)}&location=${encodeURIComponent(location)}&company=${encodeURIComponent(company)}&limit=15`
+      `/jobs/search?role=${encodeURIComponent(role)}&location=${encodeURIComponent(location)}&company=${encodeURIComponent(company)}&source=${encodeURIComponent(source)}&limit=15`
     );
 
     const matches = data.jobs || [];
