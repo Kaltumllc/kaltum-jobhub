@@ -879,375 +879,441 @@ body.light-theme .kaltum-mode-switch__label--dark {
 <div class="toast" id="toast"><span class="toast-dot"></span><span id="toastMsg">Done!</span></div>
 
 <script>
-//  Config 
-// All AI calls route through your Render backend  API key stays server-side
+// Kaltum JobHub Frontend Logic
 const API_BASE = 'https://kaltum-jobhub-api.onrender.com';
 
-//  State 
 let jobs = JSON.parse(localStorage.getItem('kaltum-apps') || '[]');
 let trackerFilter = 'all';
 
-//  API helper  central fetch with error handling 
-async function apiFetch(endpoint, options = {}) {
-  const url = `${API_BASE}${endpoint}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || `API error ${res.status}`);
-  }
-  return res.json();
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
-//  Tab switching 
+async function apiFetch(endpoint, options = {}) {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: response.statusText }));
+    throw new Error(error.detail || `API error ${response.status}`);
+  }
+
+  return response.json();
+}
+
 function switchTab(id, el) {
-  document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('on'));
-  document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.app-tab').forEach(tab => tab.classList.remove('on'));
+  document.querySelectorAll('.app-panel').forEach(panel => panel.classList.remove('on'));
+
   el.classList.add('on');
   document.getElementById('panel-' + id).classList.add('on');
-  if (id === 'tracker') //  FINAL THEME SWITCH 
-const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
 
-function applyKaltumTheme(theme) {
-  const isLight = theme === 'light';
-  document.body.classList.toggle('light-theme', isLight);
-
-  if (kaltumThemeSwitch) {
-    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
-    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  if (id === 'tracker') {
+    renderTracker();
   }
 }
 
-const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
-applyKaltumTheme(kaltumSavedTheme);
+function toast(message, type = 'success') {
+  const toastBox = document.getElementById('toast');
+  const toastDot = toastBox.querySelector('.toast-dot');
 
-if (kaltumThemeSwitch) {
-  kaltumThemeSwitch.addEventListener('click', () => {
-    const isLight = document.body.classList.contains('light-theme');
-    const nextTheme = isLight ? 'dark' : 'light';
-    localStorage.setItem('kaltum-theme', nextTheme);
-    applyKaltumTheme(nextTheme);
-  });
+  document.getElementById('toastMsg').textContent = message;
+  toastDot.style.background = type === 'error' ? '#f97316' : '#22c55e';
+
+  toastBox.classList.add('show');
+
+  setTimeout(() => {
+    toastBox.classList.remove('show');
+  }, 3500);
 }
 
-renderTracker();
-}
-
-//  Toast 
-function toast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  const dot = t.querySelector('.toast-dot');
-  document.getElementById('toastMsg').textContent = msg;
-  dot.style.background = type === 'error' ? '#f97316' : '#22c55e';
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-//  JOB SEARCH  routes through backend (no CORS issues) 
 async function searchJobs() {
   const role = document.getElementById('search-role').value.trim();
-  const loc  = document.getElementById('search-loc').value.trim();
-  if (!role) { toast('Enter a job title first', 'error'); return; }
+  const location = document.getElementById('search-loc').value.trim();
 
-  const btn = document.getElementById('searchBtn');
-  btn.disabled = true; btn.textContent = 'Searching...';
-  document.getElementById('jobResults').innerHTML =
-    `<div class="loading-jobs"><div class="spin"></div> Finding jobs for "${role}"...</div>`;
+  if (!role) {
+    toast('Enter a job title first', 'error');
+    return;
+  }
+
+  const button = document.getElementById('searchBtn');
+  const results = document.getElementById('jobResults');
+
+  button.disabled = true;
+  button.textContent = 'Searching...';
+
+  results.innerHTML = `
+    <div class="loading-jobs">
+      <div class="spin"></div>
+      Searching jobs for "${escapeHtml(role)}"...
+    </div>
+  `;
 
   try {
-    const data = await apiFetch(`/jobs/search?role=${encodeURIComponent(role)}&location=${encodeURIComponent(loc)}&limit=15`);
+    const data = await apiFetch(
+      `/jobs/search?role=${encodeURIComponent(role)}&location=${encodeURIComponent(location)}&limit=15`
+    );
+
     const matches = data.jobs || [];
 
     if (!matches.length) {
-      document.getElementById('jobResults').innerHTML = `
+      results.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">SEARCH</div>
-          <div class="empty-title">No jobs found for "${role}"</div>
-          <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Try a broader title like "developer" or "analyst"</div>
-        </div>`;
+          <div class="empty-title">No jobs found for "${escapeHtml(role)}"</div>
+          <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">
+            Try a broader title like analyst, developer, engineer, or manager.
+          </div>
+        </div>
+      `;
       return;
     }
 
-    const icons = {engineer:'ENG',developer:'DEV',designer:'DES',analyst:'DATA',manager:'MGR',scientist:'SCI',data:'DATA',product:'PROD',marketing:'MKT',sales:'SALES'};
-    const getIcon = t => { t = (t||'').toLowerCase(); for (const [k,v] of Object.entries(icons)) if (t.includes(k)) return v; return ''; };
+    const icons = {
+      engineer: 'ENG',
+      developer: 'DEV',
+      designer: 'DES',
+      analyst: 'DATA',
+      manager: 'MGR',
+      scientist: 'SCI',
+      data: 'DATA',
+      product: 'PROD',
+      marketing: 'MKT',
+      sales: 'SALES'
+    };
 
-    document.getElementById('jobResults').innerHTML = `
+    function getIcon(title) {
+      const lowerTitle = String(title || '').toLowerCase();
+      for (const [keyword, badge] of Object.entries(icons)) {
+        if (lowerTitle.includes(keyword)) {
+          return badge;
+        }
+      }
+      return 'JOB';
+    }
+
+    results.innerHTML = `
       <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:1rem">
-        ${matches.length} jobs found for "${role}"
+        ${matches.length} jobs found for "${escapeHtml(role)}"
       </div>
+
       <div class="job-cards">
-        ${matches.map(j => `
-          <div class="job-card">
-            <div class="job-card-logo">${getIcon(j.title)}</div>
-            <div>
-              <div class="job-card-title">${j.title || 'Role'}</div>
-              <div class="job-card-co">${j.company || 'Company'} | ${j.location || 'Remote'}</div>
-              <div class="job-card-tags">
-                <span class="jtag jtag-remote">Remote</span>
-                <span class="jtag jtag-ft">Full-time</span>
-                ${j.salary ? `<span class="jtag jtag-salary">${j.salary}</span>` : ''}
+        ${matches.map(job => {
+          const title = job.title || 'Role';
+          const company = job.company || 'Company';
+          const jobLocation = job.location || 'Remote';
+          const salary = job.salary || '';
+          const url = job.url || '#';
+
+          return `
+            <div class="job-card">
+              <div class="job-card-logo">${escapeHtml(getIcon(title))}</div>
+
+              <div>
+                <div class="job-card-title">${escapeHtml(title)}</div>
+                <div class="job-card-co">${escapeHtml(company)} | ${escapeHtml(jobLocation)}</div>
+
+                <div class="job-card-tags">
+                  <span class="jtag jtag-remote">${escapeHtml(job.source || 'Remote')}</span>
+                  <span class="jtag jtag-ft">Full-time</span>
+                  ${salary ? `<span class="jtag jtag-salary">${escapeHtml(salary)}</span>` : ''}
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:flex-end">
+                <button class="apply-btn" onclick='window.open(${JSON.stringify(url)}, "_blank")'>View Job</button>
+                <button class="apply-btn" style="font-size:0.7rem;padding:0.35rem 0.75rem"
+                  onclick='quickSave(${JSON.stringify(company)}, ${JSON.stringify(title)})'>
+                  Save
+                </button>
               </div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:flex-end">
-              <button class="apply-btn" onclick="window.open('${j.url || '#'}','_blank')">View Job</button>
-              <button class="apply-btn" style="font-size:0.7rem;padding:0.35rem 0.75rem"
-                onclick="quickSave('${(j.company||'').replace(/'/g,'')}','${(j.title||'').replace(/'/g,'')}')">+ Save</button>
-            </div>
-          </div>`).join('')}
-      </div>`;
-  } catch(e) {
-    document.getElementById('jobResults').innerHTML = `
+          `;
+        }).join('')}
+      </div>
+    `;
+  } catch (error) {
+    results.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">SEARCH</div>
-        <div class="empty-title">Couldn't reach the server</div>
-        <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">${e.message}</div>
-      </div>`;
+        <div class="empty-icon">ERROR</div>
+        <div class="empty-title">Could not load jobs</div>
+        <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">
+          ${escapeHtml(error.message)}
+        </div>
+      </div>
+    `;
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Search Jobs';
   }
-  btn.disabled = false; btn.textContent = 'Search Jobs';
 }
 
-function quickSave(co, title) {
-  jobs.unshift({ id: Date.now(), company: co, title, location: 'Remote', status: 'saved',
-    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}) });
+function quickSave(company, title) {
+  jobs.unshift({
+    id: Date.now(),
+    company,
+    title,
+    location: 'Remote',
+    status: 'saved',
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  });
+
   localStorage.setItem('kaltum-apps', JSON.stringify(jobs));
-  toast(`${co} saved to tracker!`);
+  toast(`${company} saved to tracker`);
 }
 
-//  RESUME BUILDER 
 function updatePreview() {
-  const name    = document.getElementById('r-name').value    || 'Your Name';
-  const role    = document.getElementById('r-role').value    || 'Your Target Role';
+  const name = document.getElementById('r-name').value || 'Your Name';
+  const role = document.getElementById('r-role').value || 'Your Target Role';
   const contact = document.getElementById('r-contact').value || 'email@example.com';
-  const exp     = document.getElementById('r-exp').value     || '';
-  const edu = document.getElementById('r-edu').value || '';
+  const experience = document.getElementById('r-exp').value || '';
+  const education = document.getElementById('r-edu').value || '';
   const skillsRaw = document.getElementById('r-skills').value || '';
-  const skills = skillsRaw.split(',').map(s => s.trim()).filter(Boolean);
+  const skills = skillsRaw.split(',').map(skill => skill.trim()).filter(Boolean);
 
   document.getElementById('resumePreview').innerHTML = `
-    <div class="rp-name">${name}</div>
-    <div class="rp-title">${role}</div>
-    <div class="rp-contact">${contact}</div>
+    <div class="rp-name">${escapeHtml(name)}</div>
+    <div class="rp-title">${escapeHtml(role)}</div>
+    <div class="rp-contact">${escapeHtml(contact)}</div>
     <div class="rp-divider"></div>
-    ${exp ? `<div class="rp-section-title">Experience</div>
-    <div class="rp-item"><div class="rp-item-desc" style="white-space:pre-wrap">${exp}</div></div>` : ''}
-    ${edu ? `<div class="rp-section-title" style="margin-top:0.8rem">Education</div>
-    <div class="rp-item"><div class="rp-item-title">${edu}</div></div>` : ''}
-    ${skills.length ? `<div class="rp-section-title" style="margin-top:0.8rem">Skills</div>
-    <div class="rp-skills">${skills.map(s => `<span class="rp-skill">${s}</span>`).join('')}</div>` : ''}
+
+    ${experience ? `
+      <div class="rp-section-title">Experience</div>
+      <div class="rp-item">
+        <div class="rp-item-desc" style="white-space:pre-wrap">${escapeHtml(experience)}</div>
+      </div>
+    ` : ''}
+
+    ${education ? `
+      <div class="rp-section-title" style="margin-top:0.8rem">Education</div>
+      <div class="rp-item">
+        <div class="rp-item-title">${escapeHtml(education)}</div>
+      </div>
+    ` : ''}
+
+    ${skills.length ? `
+      <div class="rp-section-title" style="margin-top:0.8rem">Skills</div>
+      <div class="rp-skills">
+        ${skills.map(skill => `<span class="rp-skill">${escapeHtml(skill)}</span>`).join('')}
+      </div>
+    ` : ''}
   `;
 }
 
 async function enhanceResume() {
-  const exp = document.getElementById('r-exp').value.trim();
+  const experience = document.getElementById('r-exp').value.trim();
   const role = document.getElementById('r-role').value.trim();
-  if (!exp) { toast('Add your experience first'); return; }
 
-  const btn = document.getElementById('enhanceBtn');
-  btn.disabled = true; btn.textContent = 'Enhancing...';
+  if (!experience) {
+    toast('Add your experience first', 'error');
+    return;
+  }
+
+  const button = document.getElementById('enhanceBtn');
+  button.disabled = true;
+  button.textContent = 'Enhancing...';
 
   try {
     const data = await apiFetch('/ai/enhance-resume', {
       method: 'POST',
-      body: JSON.stringify({ experience: exp, target_role: role })
+      body: JSON.stringify({
+        experience,
+        target_role: role
+      })
     });
+
     if (data.enhanced) {
       document.getElementById('r-exp').value = data.enhanced;
       updatePreview();
-      toast('Resume enhanced by AI!');
+      toast('Resume enhanced');
     }
-  } catch(e) {
-    toast(`Enhancement failed: ${e.message}`, 'error');
+  } catch (error) {
+    toast(`Enhancement failed: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Enhance Resume';
   }
-  btn.disabled = false;
-  btn.textContent = ' Enhance with AI';
 }
 
-//  COVER LETTER 
 async function generateCover() {
   const company = document.getElementById('cl-company').value.trim();
   const title = document.getElementById('cl-title').value.trim();
-  const jd = document.getElementById('cl-jd').value.trim();
-  const bg = document.getElementById('cl-bg').value.trim();
+  const jobDescription = document.getElementById('cl-jd').value.trim();
+  const background = document.getElementById('cl-bg').value.trim();
   const tone = document.getElementById('cl-tone').value;
 
-  if (!company || !title) { toast('Enter company and job title'); return; }
+  if (!company || !title) {
+    toast('Enter company and job title', 'error');
+    return;
+  }
 
-  const btn = document.getElementById('clBtn');
-  btn.disabled = true; btn.textContent = 'Generating...';
+  const button = document.getElementById('clBtn');
+  const output = document.getElementById('clOutput');
 
-  const out = document.getElementById('clOutput');
-  out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">LETTER</div>Writing your cover letter <span class="dots"><span></span><span></span><span></span></span></div>`;
+  button.disabled = true;
+  button.textContent = 'Generating...';
+
+  output.innerHTML = `
+    <div class="cl-placeholder">
+      <div class="cl-placeholder-icon">LETTER</div>
+      Writing your cover letter...
+    </div>
+  `;
+
   document.getElementById('copyBtn').style.display = 'none';
 
   try {
     const data = await apiFetch('/ai/cover-letter', {
       method: 'POST',
       body: JSON.stringify({
-        company, title,
-        job_description: jd,
-        background: bg,
+        company,
+        title,
+        job_description: jobDescription,
+        background,
         tone
       })
     });
-    const letter = data.letter || 'Unable to generate. Please try again.';
-    out.innerHTML = '';
-    out.textContent = letter;
+
+    output.innerHTML = '';
+    output.textContent = data.letter || 'Unable to generate. Please try again.';
     document.getElementById('copyBtn').style.display = 'block';
-    toast('Cover letter ready!');
-  } catch(e) {
-    out.innerHTML = `<div class="cl-placeholder"><div class="cl-placeholder-icon">LETTER</div>Error: ${e.message}</div>`;
-    toast(`Generation failed: ${e.message}`, 'error');
+    toast('Cover letter ready');
+  } catch (error) {
+    output.innerHTML = `
+      <div class="cl-placeholder">
+        <div class="cl-placeholder-icon">ERROR</div>
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+    toast(`Generation failed: ${error.message}`, 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Generate Cover Letter';
   }
-  btn.disabled = false; btn.textContent = ' Generate Cover Letter';
 }
 
 function copyLetter() {
   navigator.clipboard.writeText(document.getElementById('clOutput').textContent);
-  toast('Copied to clipboard!');
+  toast('Copied to clipboard');
 }
 
-//  TRACKER 
 function renderTracker() {
   const list = document.getElementById('trackerList');
-  const filtered = trackerFilter === 'all' ? jobs : jobs.filter(j => j.status === trackerFilter);
+  const filtered = trackerFilter === 'all'
+    ? jobs
+    : jobs.filter(job => job.status === trackerFilter);
 
   if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">SEARCH</div><div class="empty-title">${trackerFilter === 'all' ? 'No applications yet' : 'No ' + trackerFilter + ' applications'}</div><div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">Add your first job above</div></div>`;
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">TRACK</div>
+        <div class="empty-title">${trackerFilter === 'all' ? 'No applications yet' : 'No ' + trackerFilter + ' applications'}</div>
+        <div style="font-size:0.82rem;margin-top:0.3rem;color:var(--muted)">
+          Add your first job above.
+        </div>
+      </div>
+    `;
     return;
   }
 
-  list.innerHTML = filtered.map(j => `
+  list.innerHTML = filtered.map(job => `
     <div class="tracker-row">
       <div>
-        <div class="tr-title">${j.title}</div>
-        <div class="tr-co">${j.company} | ${j.location || 'Remote'}</div>
+        <div class="tr-title">${escapeHtml(job.title)}</div>
+        <div class="tr-co">${escapeHtml(job.company)} | ${escapeHtml(job.location || 'Remote')}</div>
       </div>
-      <div class="tr-date">${j.date || ''}</div>
-      <span class="status-pill sp-${j.status}">${j.status.toUpperCase()}</span>
-      <select class="status-select" onchange="updateStatus(${j.id},this.value)">
-        <option value="saved" ${j.status==='saved'?'selected':''}>Saved</option>
-        <option value="applied" ${j.status==='applied'?'selected':''}>Applied</option>
-        <option value="interview" ${j.status==='interview'?'selected':''}>Interview</option>
-        <option value="offer" ${j.status==='offer'?'selected':''}>Offer</option>
-        <option value="rejected" ${j.status==='rejected'?'selected':''}>Rejected</option>
+
+      <div class="tr-date">${escapeHtml(job.date || '')}</div>
+      <span class="status-pill sp-${escapeHtml(job.status)}">${escapeHtml(job.status).toUpperCase()}</span>
+
+      <select class="status-select" onchange="updateStatus(${job.id}, this.value)">
+        <option value="saved" ${job.status === 'saved' ? 'selected' : ''}>Saved</option>
+        <option value="applied" ${job.status === 'applied' ? 'selected' : ''}>Applied</option>
+        <option value="interview" ${job.status === 'interview' ? 'selected' : ''}>Interview</option>
+        <option value="offer" ${job.status === 'offer' ? 'selected' : ''}>Offer</option>
+        <option value="rejected" ${job.status === 'rejected' ? 'selected' : ''}>Rejected</option>
       </select>
-      <button class="del-btn" onclick="deleteJob(${j.id})"></button>
+
+      <button class="del-btn" onclick="deleteJob(${job.id})">X</button>
     </div>
   `).join('');
 }
 
-function filterTracker(f, el) {
-  trackerFilter = f;
-  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
+function filterTracker(filter, el) {
+  trackerFilter = filter;
+  document.querySelectorAll('.fpill').forEach(pill => pill.classList.remove('on'));
   el.classList.add('on');
-  //  FINAL THEME SWITCH 
-const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
-
-function applyKaltumTheme(theme) {
-  const isLight = theme === 'light';
-  document.body.classList.toggle('light-theme', isLight);
-
-  if (kaltumThemeSwitch) {
-    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
-    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
-  }
-}
-
-const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
-applyKaltumTheme(kaltumSavedTheme);
-
-if (kaltumThemeSwitch) {
-  kaltumThemeSwitch.addEventListener('click', () => {
-    const isLight = document.body.classList.contains('light-theme');
-    const nextTheme = isLight ? 'dark' : 'light';
-    localStorage.setItem('kaltum-theme', nextTheme);
-    applyKaltumTheme(nextTheme);
-  });
-}
-
-renderTracker();
+  renderTracker();
 }
 
 function updateStatus(id, status) {
-  const j = jobs.find(x => x.id === id);
-  if (j) { j.status = status; saveJobs(); //  FINAL THEME SWITCH 
-const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
-
-function applyKaltumTheme(theme) {
-  const isLight = theme === 'light';
-  document.body.classList.toggle('light-theme', isLight);
-
-  if (kaltumThemeSwitch) {
-    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
-    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  const job = jobs.find(item => item.id === id);
+  if (job) {
+    job.status = status;
+    saveJobs();
+    renderTracker();
   }
-}
-
-const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
-applyKaltumTheme(kaltumSavedTheme);
-
-if (kaltumThemeSwitch) {
-  kaltumThemeSwitch.addEventListener('click', () => {
-    const isLight = document.body.classList.contains('light-theme');
-    const nextTheme = isLight ? 'dark' : 'light';
-    localStorage.setItem('kaltum-theme', nextTheme);
-    applyKaltumTheme(nextTheme);
-  });
-}
-
-renderTracker(); }
 }
 
 function deleteJob(id) {
-  jobs = jobs.filter(x => x.id !== id);
-  saveJobs(); //  FINAL THEME SWITCH 
-const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
-
-function applyKaltumTheme(theme) {
-  const isLight = theme === 'light';
-  document.body.classList.toggle('light-theme', isLight);
-
-  if (kaltumThemeSwitch) {
-    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
-    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
-  }
+  jobs = jobs.filter(job => job.id !== id);
+  saveJobs();
+  renderTracker();
+  toast('Removed');
 }
 
-const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
-applyKaltumTheme(kaltumSavedTheme);
-
-if (kaltumThemeSwitch) {
-  kaltumThemeSwitch.addEventListener('click', () => {
-    const isLight = document.body.classList.contains('light-theme');
-    const nextTheme = isLight ? 'dark' : 'light';
-    localStorage.setItem('kaltum-theme', nextTheme);
-    applyKaltumTheme(nextTheme);
-  });
+function saveJobs() {
+  localStorage.setItem('kaltum-apps', JSON.stringify(jobs));
 }
 
-renderTracker(); toast('Removed');
+function openAddModal() {
+  document.getElementById('addModal').classList.add('open');
 }
 
-function saveJobs() { localStorage.setItem('kaltum-apps', JSON.stringify(jobs)); }
-
-//  MODAL 
-function openAddModal() { document.getElementById('addModal').classList.add('open'); }
-function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('addModal').classList.remove('open');
+}
 
 function saveJob() {
-  const co = document.getElementById('m-co').value.trim();
+  const company = document.getElementById('m-co').value.trim();
   const title = document.getElementById('m-title').value.trim();
-  if (!co || !title) { toast('Enter company and title'); return; }
+
+  if (!company || !title) {
+    toast('Enter company and title', 'error');
+    return;
+  }
+
   jobs.unshift({
-    id: Date.now(), company: co, title,
+    id: Date.now(),
+    company,
+    title,
     location: document.getElementById('m-loc').value.trim() || 'Remote',
     status: document.getElementById('m-status').value,
     notes: document.getElementById('m-notes').value.trim(),
-    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'})
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   });
-  saveJobs(); closeModal(); //  FINAL THEME SWITCH 
+
+  saveJobs();
+  closeModal();
+  renderTracker();
+
+  ['m-co', 'm-title', 'm-loc', 'm-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  toast(`${company} added`);
+}
+
 const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
 
 function applyKaltumTheme(theme) {
@@ -1272,61 +1338,17 @@ if (kaltumThemeSwitch) {
   });
 }
 
-renderTracker();
-  ['m-co','m-title','m-loc','m-notes'].forEach(id => document.getElementById(id).value = '');
-  toast(`${co} added!`);
-}
-
-document.getElementById('addModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-document.getElementById('search-role').addEventListener('keydown', e => { if (e.key === 'Enter') searchJobs(); });
-
-// -- THEME TOGGLE ---------------------------------------------------
-const themeToggle = document.getElementById('themeToggle');
-
-function applyTheme(theme) {
-  if (theme === 'light') {
-    document.body.classList.add('light-theme');
-    document.getElementById('themeLabel').textContent = 'Dark Mode';
-  } else {
-    document.body.classList.remove('light-theme');
-    document.getElementById('themeLabel').textContent = 'Light Mode';
+document.getElementById('addModal').addEventListener('click', event => {
+  if (event.target === event.currentTarget) {
+    closeModal();
   }
-}
-
-const savedTheme = localStorage.getItem('kaltum-theme') || 'dark';
-applyTheme(savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const isLight = document.body.classList.contains('light-theme');
-  const newTheme = isLight ? 'dark' : 'light';
-  localStorage.setItem('kaltum-theme', newTheme);
-  applyTheme(newTheme);
 });
 
-//  FINAL THEME SWITCH 
-const kaltumThemeSwitch = document.getElementById('kaltumThemeSwitch');
-
-function applyKaltumTheme(theme) {
-  const isLight = theme === 'light';
-  document.body.classList.toggle('light-theme', isLight);
-
-  if (kaltumThemeSwitch) {
-    kaltumThemeSwitch.setAttribute('aria-pressed', String(isLight));
-    kaltumThemeSwitch.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+document.getElementById('search-role').addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    searchJobs();
   }
-}
-
-const kaltumSavedTheme = localStorage.getItem('kaltum-theme') || 'dark';
-applyKaltumTheme(kaltumSavedTheme);
-
-if (kaltumThemeSwitch) {
-  kaltumThemeSwitch.addEventListener('click', () => {
-    const isLight = document.body.classList.contains('light-theme');
-    const nextTheme = isLight ? 'dark' : 'light';
-    localStorage.setItem('kaltum-theme', nextTheme);
-    applyKaltumTheme(nextTheme);
-  });
-}
+});
 
 renderTracker();
 </script>
